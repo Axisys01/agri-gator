@@ -1,1 +1,13 @@
 node_modules
+# Ignore Next.js build and development cache files
+/.next/
+/out/
+
+# Dependency directory
+/node_modules/
+
+# Local environment variables (sensitive data)
+.env*.local
+
+# Next.js TypeScript auto-generated types
+next-env.d.ts
