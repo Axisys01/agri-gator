@@ -101,6 +101,15 @@ export async function getActiveWeatherAlerts(
 ): Promise<WeatherAlert[]> {
   const res = await fetch(NOWCAST_ALERTS_URL, {
     headers: { Accept: "application/rss+xml, application/xml, text/xml" },
+    // The header renders on every page, and Next doesn't cache fetch by
+    // default — uncached, each navigation would put BMKG on the critical path
+    // of the whole app, so an outage there would become an outage here. The
+    // feed is national (identical bytes for every user; filtering happens
+    // below), so one cached copy serves everyone.
+    //
+    // Kept deliberately short: observed nowcasts publish only ~10 minutes
+    // ahead of the event, so a long window would eat the entire warning.
+    next: { revalidate: 180 },
   });
 
   if (!res.ok) {

@@ -1,10 +1,11 @@
 import { headers } from "next/headers";
-import { Bell } from "lucide-react";
 import { SignInButton } from "@/components/auth/sign-in-button";
 import { UserMenu } from "@/components/auth/user-menu";
 import { FeatureSearch } from "@/components/feature-search";
 import { HeaderLocationPicker } from "@/components/header-location-picker";
+import { NotificationBell } from "@/components/notification-bell";
 import { getUserLocation } from "@/lib/user-location";
+import { getUserWeatherAlerts } from "@/lib/user-alerts";
 
 export async function DashboardHeader() {
   // The session was already verified once in proxy.ts (which must run on
@@ -16,6 +17,9 @@ export async function DashboardHeader() {
   const userName = headerList.get("x-supabase-user-name");
   const userLabel = userName || userEmail;
   const location = userLabel ? await getUserLocation() : null;
+  // Signed-out visitors have no location, so there's nothing to warn about —
+  // skip the BMKG lookup entirely rather than fetch and discard.
+  const { alerts } = userLabel ? await getUserWeatherAlerts() : { alerts: [] };
 
   return (
     <header className="sticky top-0 z-20 border-b border-border bg-background/85 backdrop-blur">
@@ -32,25 +36,22 @@ export async function DashboardHeader() {
           </span>
         </a>
 
-        <FeatureSearch />
+        {/* Every module route is auth-gated, so a signed-out search would only
+            ever bounce you back to the landing page. */}
+        {userLabel && <FeatureSearch />}
 
         {/* The search bar carries the ml-auto that pushes this group right, but
-            it's hidden below md — so the group needs its own until then. */}
-        <div className="ml-auto flex items-center gap-2 md:ml-0">
+            only exists at md+ and only once signed in — so the group keeps its
+            own margin whenever the search isn't there to provide it. */}
+        <div
+          className={`ml-auto flex items-center gap-2 ${userLabel ? "md:ml-0" : ""}`}
+        >
           {/* Only signed-in users get the picker — the choice is saved per account. */}
           {userLabel && <HeaderLocationPicker initial={location} />}
 
-          <button
-            type="button"
-            className="relative flex size-10 shrink-0 items-center justify-center rounded-full border border-border bg-card text-secondary-foreground transition-colors hover:bg-secondary"
-            aria-label="Notifications"
-          >
-            <Bell className="size-5" aria-hidden="true" />
-            <span
-              className="absolute right-2 top-2 size-2 rounded-full bg-accent"
-              aria-hidden="true"
-            />
-          </button>
+          {/* Nothing to notify a signed-out visitor about — warnings are tied
+              to the village saved on the account. */}
+          {userLabel && <NotificationBell alerts={alerts} placeName={location?.desa} />}
 
           {userLabel ? <UserMenu label={userLabel} /> : <SignInButton />}
         </div>

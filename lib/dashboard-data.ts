@@ -3,7 +3,6 @@ import {
   ScanLine,
   LineChart,
   Calculator,
-  GraduationCap,
   type LucideIcon,
 } from "lucide-react"
 
@@ -24,6 +23,11 @@ export type CommodityTrend = {
 export const FEATURED_COMMODITIES = ["Beras", "Cabai Merah", "Bawang Merah"]
 
 export const MAX_SEARCH_RESULTS = 12
+
+// The dashboard grid tops out at 3 across; past a couple of rows the prices
+// section crowds out everything below it, and "View all" already covers the
+// rest.
+export const MAX_DASHBOARD_COMMODITIES = 6
 
 export type PriceRow = { commodity: string; date: string; price: number }
 
@@ -106,20 +110,6 @@ export const features: Feature[] = [
     icon: Calculator,
     phase: "growing",
     stage: "During growing season",
-    status: "live",
-  },
-  {
-    id: "learning-hub",
-    module: "Module 5",
-    name: "Learning Hub",
-    short: "Learn",
-    description:
-      "Official Kementan Cybex & government videos curated into one categorized library for young and new farmers.",
-    aggregates: "Government education content",
-    href: "/learning-hub",
-    icon: GraduationCap,
-    phase: "planning",
-    stage: "Before planting",
     status: "live",
   },
   {

@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import type { LocationResult } from "@/lib/wilayah";
 
@@ -16,7 +17,11 @@ export const USER_LOCATION_FIELDS = [
 // limits SELECT to auth.uid() = user_id, so an unfiltered select returns just
 // this user's row — no need to resolve the user id first, which keeps the
 // header off the extra Supabase Auth round trip it already avoids.
-export async function getUserLocation(): Promise<LocationResult | null> {
+//
+// cache() dedupes this within a single render: the header wants it for the
+// location picker, and the alert lookups want it too, but that's one row and
+// should be one query.
+export const getUserLocation = cache(async (): Promise<LocationResult | null> => {
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -30,4 +35,4 @@ export async function getUserLocation(): Promise<LocationResult | null> {
   }
 
   return data;
-}
+});

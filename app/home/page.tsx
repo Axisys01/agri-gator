@@ -1,9 +1,11 @@
 import { headers } from "next/headers";
-import { TriangleAlert } from "lucide-react";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { CommodityPriceCharts } from "@/components/commodity-price-charts";
 import { FeatureGrid } from "@/components/feature-grid";
+import { WeatherAlertCard } from "@/components/weather-alert-card";
 import { getCommodityPrices } from "@/lib/get-commodity-prices";
+import { getUserCommodities } from "@/lib/user-commodities";
+import { getUserWeatherAlerts } from "@/lib/user-alerts";
 
 // The server clock is UTC on Vercel, which would greet a farmer opening the app
 // at 9am WIB with "Selamat malam". Pin it to Jakarta so the greeting matches
@@ -29,7 +31,13 @@ function greetingFor(now: Date) {
 }
 
 export default async function HomePage() {
-  const commodities = await getCommodityPrices();
+  // Fetched once here rather than inside getCommodityPrices, since the charts
+  // need the same list to decide which hearts render filled.
+  const pinned = await getUserCommodities();
+  const commodities = await getCommodityPrices(pinned);
+  // Same lookup the header's bell uses — getUserLocation is cache()d and the
+  // BMKG feed is fetch-cached, so this costs nothing extra.
+  const { location: alertLocation, alerts } = await getUserWeatherAlerts();
 
   // Verified once in proxy.ts and forwarded via headers — see dashboard-header.tsx.
   const headerList = await headers();
@@ -54,26 +62,10 @@ export default async function HomePage() {
         </div>
 
         {/* BMKG nowcast / extreme weather alert (Module 1) */}
-        <div
-          role="alert"
-          className="mt-5 flex items-start gap-3 rounded-2xl border border-accent/30 bg-accent/10 p-4"
-        >
-          <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-accent text-accent-foreground">
-            <TriangleAlert className="size-4" aria-hidden="true" />
-          </span>
-          <div className="text-sm">
-            <p className="font-semibold text-foreground">
-              Active extreme-weather warning for Jawa Tengah
-            </p>
-            <p className="mt-0.5 text-muted-foreground">
-              BMKG nowcast flags heavy rainfall in the next 24h. Consider delaying fertilizer
-              application — see the Planting Calendar for adjusted windows.
-            </p>
-          </div>
-        </div>
+        <WeatherAlertCard location={alertLocation} alerts={alerts} />
 
         <div className="mt-8 flex flex-col gap-8">
-          <CommodityPriceCharts commodities={commodities} />
+          <CommodityPriceCharts commodities={commodities} pinned={pinned} />
           <FeatureGrid />
         </div>
       </main>

@@ -5,13 +5,18 @@ import type { LocationResult } from "@/lib/wilayah";
 
 export default function LocationSearch({
   onSelect,
+  initial,
 }: {
   onSelect: (location: LocationResult) => void;
+  initial?: LocationResult | null;
 }) {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initial?.label ?? "");
   const [results, setResults] = useState<LocationResult[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
+  // Seeded alongside query so the effect below treats a prefilled location as
+  // an already-made choice: query === selectedLabel short-circuits the search
+  // and keeps the dropdown shut on load.
+  const [selectedLabel, setSelectedLabel] = useState<string | null>(initial?.label ?? null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {

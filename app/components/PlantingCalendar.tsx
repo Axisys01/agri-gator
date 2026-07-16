@@ -16,8 +16,14 @@ interface AdviceResponse {
   advice: PlantingAdvice;
 }
 
-export default function PlantingCalendar() {
-  const [location, setLocation] = useState<LocationResult | null>(null);
+export default function PlantingCalendar({
+  initialLocation,
+}: {
+  initialLocation?: LocationResult | null;
+}) {
+  // Seeded from the location saved on the account, so submitting works right
+  // away without the farmer re-picking a village they already told us about.
+  const [location, setLocation] = useState<LocationResult | null>(initialLocation ?? null);
   const [cropId, setCropId] = useState(CROPS[0].id);
   const [result, setResult] = useState<AdviceResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -51,7 +57,7 @@ export default function PlantingCalendar() {
   return (
     <div className="mx-auto w-full max-w-2xl space-y-6">
       <div className="space-y-4 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-        <LocationSearch onSelect={setLocation} />
+        <LocationSearch onSelect={setLocation} initial={initialLocation} />
 
         <div>
           <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">

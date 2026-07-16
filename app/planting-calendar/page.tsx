@@ -1,8 +1,11 @@
 import { CalendarDays } from "lucide-react";
 import { DashboardHeader } from "@/components/dashboard-header";
 import PlantingCalendar from "@/app/components/PlantingCalendar";
+import { getUserLocation } from "@/lib/user-location";
 
-export default function PlantingCalendarPage() {
+export default async function PlantingCalendarPage() {
+  const location = await getUserLocation();
+
   return (
     <div className="min-h-screen bg-background">
       <DashboardHeader />
@@ -20,7 +23,11 @@ export default function PlantingCalendarPage() {
         </p>
 
         <div className="mt-8 w-full">
-          <PlantingCalendar />
+          {/* Keyed on the saved location: initialLocation only seeds state on
+              first render, so without this, changing location from the header
+              chip would leave a stale village in the input and advice for the
+              old place still on screen. */}
+          <PlantingCalendar key={location?.adm4 ?? "none"} initialLocation={location} />
         </div>
       </main>
     </div>
