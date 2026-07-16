@@ -1,5 +1,6 @@
 import { CalendarDays } from "lucide-react";
 import { DashboardHeader } from "@/components/dashboard-header";
+import PlantingCalendar from "@/app/components/PlantingCalendar";
 
 export default function PlantingCalendarPage() {
   return (
@@ -17,9 +18,10 @@ export default function PlantingCalendarPage() {
           Cross-references BMKG weather + nowcast alerts with your crop to recommend planting
           windows and harvest timing.
         </p>
-        <span className="mt-6 rounded-full bg-accent/15 px-3 py-1 text-xs font-semibold text-accent">
-          Coming soon
-        </span>
+
+        <div className="mt-8 w-full">
+          <PlantingCalendar />
+        </div>
       </main>
     </div>
   );

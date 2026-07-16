@@ -17,7 +17,7 @@ export async function DashboardHeader() {
     <header className="sticky top-0 z-20 border-b border-border bg-background/85 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 md:px-6">
         <a
-          href="#"
+          href="/home"
           className="flex items-center gap-2"
           aria-label="Agri-Gator home"
         >

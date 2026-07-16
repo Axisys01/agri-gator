@@ -49,7 +49,7 @@ export default function PlantingCalendar() {
   }
 
   return (
-    <div className="w-full max-w-2xl space-y-6">
+    <div className="mx-auto w-full max-w-2xl space-y-6">
       <div className="space-y-4 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
         <LocationSearch onSelect={setLocation} />
 
