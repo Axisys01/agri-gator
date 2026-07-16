@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 13, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/aryar/hellofriend/agri-gator/app/favicon.ico.mjs%20%28structured%20image%20object%29"],"sourcesContent":["import src from \"IMAGE\";\nexport default { src, width: 256, height: 256 }\n"],"names":["src","width","height"],"mappings":";;;;AAAA;;uCACe;IAAEA,KAAAA,mKAAG;IAAEC,OAAO;IAAKC,QAAQ;AAAI"}},
-    {"offset": {"line": 28, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/aryar/hellofriend/agri-gator/app/dev/page.tsx"],"sourcesContent":["export default function DevPage() {\r\n  return (\r\n    <main\r\n      style={{\r\n        padding: 40,\r\n        fontFamily: \"sans-serif\"\r\n      }}\r\n    >\r\n      <h1>BMKG Explorer</h1>\r\n\r\n      <button>Earthquake</button>\r\n    </main>\r\n  );\r\n}"],"names":["DevPage","style","padding","fontFamily"],"mappings":";;;;;;AAAe,SAASA;IACtB,qBACE,8QAAC;QACCC,OAAO;YACLC,SAAS;YACTC,YAAY;QACd;;0BAEA,8QAAC;0BAAG;;;;;;0BAEJ,8QAAC;0BAAO;;;;;;;;;;;;AAGd"}}]
-}
