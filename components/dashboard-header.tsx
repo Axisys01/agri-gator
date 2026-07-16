@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { Bell, Leaf, MapPin, Search } from "lucide-react";
+import { Bell, MapPin, Search } from "lucide-react";
 import { SignInButton } from "@/components/auth/sign-in-button";
 import { UserMenu } from "@/components/auth/user-menu";
 
@@ -21,9 +21,8 @@ export async function DashboardHeader() {
           className="flex items-center gap-2"
           aria-label="Agri-Gator home"
         >
-          <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <Leaf className="size-5" aria-hidden="true" />
-          </span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.svg" alt="" className="size-9 shrink-0" aria-hidden="true" />
           <span className="font-serif text-lg font-bold tracking-tight text-foreground">
             Agri<span className="text-primary">-Gator</span>
           </span>

@@ -11,20 +11,7 @@ export const metadata: Metadata = {
   description:
     "Agri-Gator brings weather, market prices, dosage guidance and learning into one app for Indonesian farmers.",
   icons: {
-    icon: [
-      {
-        url: "/icon-light-32x32.png",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        url: "/icon-dark-32x32.png",
-        media: "(prefers-color-scheme: dark)",
-      },
-      {
-        url: "/icon.svg",
-        type: "image/svg+xml",
-      },
-    ],
+    icon: [{ url: "/logo.svg", type: "image/svg+xml" }],
     apple: "/apple-icon.png",
   },
 };
