@@ -11,3 +11,5 @@ node_modules
 
 # Next.js TypeScript auto-generated types
 next-env.d.ts
+
+*.tsbuildinfo
