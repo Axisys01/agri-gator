@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Info } from "lucide-react";
+import { Info, Map as MapIcon } from "lucide-react";
+import { PlotAreaMap } from "@/components/plot-area-map";
 
 // Smallholders measure plots in local units far more often than in hectares —
 // a tumbak (also called bata or ru) is ~14 m². Mixing these up is a 100x error,
@@ -14,6 +15,20 @@ const AREA_UNITS = {
 } as const;
 
 type AreaUnit = keyof typeof AREA_UNITS;
+
+// Pesticides ship as liquids (EC, SL) and as solids (WP, SP, WG), so the label
+// figure is either volume or weight — and the answer has to come back in the
+// same one. Telling someone to measure a wettable powder in millilitres is how
+// a tank gets mixed wrong.
+//
+// Indonesian labels overwhelmingly print "cc" rather than "ml"; identical
+// units, but cc is the word actually on the bottle in the farmer's hand.
+const PRODUCT_UNITS = {
+  ml: { label: "ml / cc per litre", short: "ml", bulk: "L" },
+  g: { label: "gram per litre", short: "g", bulk: "kg" },
+} as const;
+
+type ProductUnit = keyof typeof PRODUCT_UNITS;
 
 // Volume semprot — the spray volumes per hectare normally recommended.
 const SPRAY_VOLUMES = [300, 400, 500];
@@ -29,8 +44,10 @@ export function PesticideCalculator() {
   const [area, setArea] = useState("");
   const [unit, setUnit] = useState<AreaUnit>("ha");
   const [concentration, setConcentration] = useState("");
+  const [productUnit, setProductUnit] = useState<ProductUnit>("ml");
   const [sprayVolume, setSprayVolume] = useState(400);
   const [tankSize, setTankSize] = useState(15);
+  const [mapOpen, setMapOpen] = useState(false);
 
   const areaValue = Number(area);
   const concentrationValue = Number(concentration);
@@ -41,25 +58,56 @@ export function PesticideCalculator() {
     concentrationValue > 0;
 
   // dosis = konsentrasi x volume semprot, so the product needed for the plot is
-  // just the concentration applied across the whole spray volume.
+  // just the concentration applied across the whole spray volume. These are
+  // unit-agnostic: whatever the label is measured in, the answer comes back in.
   const areaHa = areaValue * AREA_UNITS[unit].toHa;
   const totalSprayL = areaHa * sprayVolume;
   const tanks = totalSprayL / tankSize;
-  const perTankMl = concentrationValue * tankSize;
-  const totalProductMl = concentrationValue * totalSprayL;
-  const dosePerHaMl = concentrationValue * sprayVolume;
+  const perTank = concentrationValue * tankSize;
+  const totalProduct = concentrationValue * totalSprayL;
+  const dosePerHa = concentrationValue * sprayVolume;
+
+  const productLabel = PRODUCT_UNITS[productUnit].short;
+  // ml -> L and g -> kg are both a factor of 1000.
+  const bulkLabel = PRODUCT_UNITS[productUnit].bulk;
 
   return (
     <div className="mx-auto w-full max-w-2xl">
       <div className="space-y-5 rounded-2xl border border-border bg-card p-5 md:p-6">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
-            <label
-              htmlFor="area"
-              className="mb-1.5 block text-sm font-medium text-foreground"
-            >
-              Land area
-            </label>
+            <div className="mb-1.5 flex items-end justify-between gap-2">
+              <label htmlFor="area" className="block text-sm font-medium text-foreground">
+                Land area
+              </label>
+              {/* Area is this calculator's most-guessed input, and every number
+                  below is a multiple of it — so measuring it beats estimating. */}
+              <button
+                type="button"
+                onClick={() => setMapOpen((value) => !value)}
+                aria-expanded={mapOpen}
+                className="flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+              >
+                <MapIcon className="size-3.5" aria-hidden="true" />
+                {mapOpen ? "Hide map" : "Measure on a map"}
+              </button>
+            </div>
+
+            {mapOpen && (
+              <div className="mb-3">
+                <PlotAreaMap
+                  onApply={(hectares) => {
+                    // Round-trips as hectares, which is what the map measures —
+                    // converting into the farmer's chosen unit would introduce
+                    // a second rounding for no benefit.
+                    setArea(String(Number(hectares.toFixed(4))));
+                    setUnit("ha");
+                    setMapOpen(false);
+                  }}
+                />
+              </div>
+            )}
+
             <div className="flex gap-2">
               <input
                 id="area"
@@ -93,7 +141,7 @@ export function PesticideCalculator() {
             >
               Concentration from the product label
             </label>
-            <div className="flex items-center gap-2">
+            <div className="flex gap-2">
               <input
                 id="concentration"
                 type="number"
@@ -105,7 +153,18 @@ export function PesticideCalculator() {
                 placeholder="2"
                 className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-primary"
               />
-              <span className="shrink-0 text-sm text-muted-foreground">ml or g per litre</span>
+              <select
+                aria-label="Concentration unit"
+                value={productUnit}
+                onChange={(event) => setProductUnit(event.target.value as ProductUnit)}
+                className="shrink-0 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary"
+              >
+                {Object.entries(PRODUCT_UNITS).map(([value, { label }]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -165,7 +224,7 @@ export function PesticideCalculator() {
                   Product per tank
                 </p>
                 <p className="mt-1 font-serif text-3xl font-bold text-primary">
-                  {format(perTankMl)} ml
+                  {format(perTank)} {productLabel}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   in each {tankSize} L tank
@@ -188,7 +247,8 @@ export function PesticideCalculator() {
               <div className="flex justify-between gap-4">
                 <dt className="text-muted-foreground">Total product</dt>
                 <dd className="font-medium text-foreground">
-                  {format(totalProductMl)} ml ({format(totalProductMl / 1000, 2)} L)
+                  {format(totalProduct)} {productLabel} ({format(totalProduct / 1000, 2)}{" "}
+                  {bulkLabel})
                 </dd>
               </div>
               <div className="flex justify-between gap-4">
@@ -197,7 +257,9 @@ export function PesticideCalculator() {
               </div>
               <div className="flex justify-between gap-4">
                 <dt className="text-muted-foreground">Dose per hektar</dt>
-                <dd className="font-medium text-foreground">{format(dosePerHaMl)} ml/ha</dd>
+                <dd className="font-medium text-foreground">
+                  {format(dosePerHa)} {productLabel}/ha
+                </dd>
               </div>
               <div className="flex justify-between gap-4">
                 <dt className="text-muted-foreground">Plot size</dt>
