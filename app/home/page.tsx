@@ -1,13 +1,18 @@
+import { headers } from "next/headers";
 import { TriangleAlert } from "lucide-react";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { CommodityPriceCharts } from "@/components/commodity-price-charts";
 import { FeatureGrid } from "@/components/feature-grid";
 import { getCommodityPrices } from "@/lib/get-commodity-prices";
 
-export const revalidate = 3600;
-
 export default async function HomePage() {
   const commodities = await getCommodityPrices();
+
+  // Verified once in proxy.ts and forwarded via headers — see dashboard-header.tsx.
+  const headerList = await headers();
+  const userEmail = headerList.get("x-supabase-user-email");
+  const userName = headerList.get("x-supabase-user-name");
+  const greetingName = userName || userEmail;
 
   return (
     <div className="min-h-screen bg-background">
@@ -15,7 +20,9 @@ export default async function HomePage() {
 
       <main className="mx-auto max-w-6xl px-4 py-6 md:px-6 md:py-8">
         <div className="flex flex-col gap-2">
-          <p className="text-sm text-muted-foreground">Good morning, Budi</p>
+          <p className="text-sm text-muted-foreground">
+            {greetingName ? `Good morning, ${greetingName}` : "Good morning"}
+          </p>
           <h1 className="font-serif text-2xl font-bold tracking-tight text-foreground text-balance md:text-3xl">
             Everything your farm needs, aggregated.
           </h1>
