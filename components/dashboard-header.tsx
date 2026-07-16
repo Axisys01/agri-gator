@@ -1,7 +1,8 @@
 import { headers } from "next/headers";
-import { Bell, Search } from "lucide-react";
+import { Bell } from "lucide-react";
 import { SignInButton } from "@/components/auth/sign-in-button";
 import { UserMenu } from "@/components/auth/user-menu";
+import { FeatureSearch } from "@/components/feature-search";
 import { HeaderLocationPicker } from "@/components/header-location-picker";
 import { getUserLocation } from "@/lib/user-location";
 
@@ -31,15 +32,7 @@ export async function DashboardHeader() {
           </span>
         </a>
 
-        <div className="ml-auto hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-sm text-muted-foreground md:flex md:w-72">
-          <Search className="size-4 shrink-0" aria-hidden="true" />
-          <input
-            type="search"
-            placeholder="Search crops, prices, guides..."
-            className="w-full bg-transparent outline-none placeholder:text-muted-foreground"
-            aria-label="Search"
-          />
-        </div>
+        <FeatureSearch />
 
         {/* The search bar carries the ml-auto that pushes this group right, but
             it's hidden below md — so the group needs its own until then. */}
