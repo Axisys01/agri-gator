@@ -100,7 +100,7 @@ export const features: Feature[] = [
     name: "Dosage Calculator",
     short: "Dosage",
     description:
-      "Enter land size, crop type and plant age to get land-specific fertilizer and pesticide dosage and schedules.",
+      "Turns the concentration on your pesticide label into how much goes in each sprayer tank, and how many tanks your plot needs.",
     aggregates: "Agronomic guidance",
     href: "/dosage-calculator",
     icon: Calculator,

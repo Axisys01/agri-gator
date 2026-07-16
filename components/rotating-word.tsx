@@ -19,10 +19,12 @@ export function RotatingWord({
     return () => clearInterval(id);
   }, [words.length, intervalMs]);
 
-  // Stack every word in the same grid cell so the box sizes to the longest
-  // word and the surrounding text never reflows as words swap.
+  // Stack every word in the same grid cell so the box sizes to the longest word
+  // and the surrounding text never reflows as words swap. justify-items-center
+  // then centres each word in that fixed box — without it, shorter words sit
+  // flush left and their trailing space visibly pulls the line off-centre.
   return (
-    <span className="relative inline-grid text-primary">
+    <span className="relative inline-grid justify-items-center text-primary">
       {words.map((word, i) => (
         <span
           key={word}
