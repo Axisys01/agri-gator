@@ -60,14 +60,16 @@ export default function LandingPage() {
             </a>
           </div>
 
-          {/* Hero image */}
-          <div className="relative mt-14 w-full overflow-hidden rounded-3xl border border-border shadow-sm">
+          {/* Hero image — the mockup is a transparent portrait PNG, so it needs
+              a width cap rather than the full-bleed landscape frame, and no
+              border box of its own. */}
+          <div className="relative mt-14 w-full max-w-[260px] md:max-w-[300px]">
             <Image
-              src="/images/hero-farmland.png"
-              alt="Aerial view of terraced green rice paddies in Indonesia at golden hour"
-              width={1200}
-              height={640}
-              className="h-auto w-full object-cover"
+              src="/iphone-mockup.png"
+              alt="Agri-Gator open on a phone, showing the landing page"
+              width={1419}
+              height={2796}
+              className="h-auto w-full"
               preload
             />
           </div>

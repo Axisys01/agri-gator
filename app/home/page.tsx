@@ -5,6 +5,29 @@ import { CommodityPriceCharts } from "@/components/commodity-price-charts";
 import { FeatureGrid } from "@/components/feature-grid";
 import { getCommodityPrices } from "@/lib/get-commodity-prices";
 
+// The server clock is UTC on Vercel, which would greet a farmer opening the app
+// at 9am WIB with "Selamat malam". Pin it to Jakarta so the greeting matches
+// the user's day rather than the datacentre's.
+//
+// These are Indonesian day boundaries, not the English ones translated: siang
+// is the middle of the day and sore is late afternoon, so the cutoffs sit
+// earlier than morning/afternoon/evening would.
+function greetingFor(now: Date) {
+  const hour = Number(
+    new Intl.DateTimeFormat("en-US", {
+      timeZone: "Asia/Jakarta",
+      hour: "numeric",
+      hourCycle: "h23",
+    }).format(now),
+  );
+
+  if (hour < 5) return "Selamat malam";
+  if (hour < 11) return "Selamat pagi";
+  if (hour < 15) return "Selamat siang";
+  if (hour < 18) return "Selamat sore";
+  return "Selamat malam";
+}
+
 export default async function HomePage() {
   const commodities = await getCommodityPrices();
 
@@ -12,7 +35,12 @@ export default async function HomePage() {
   const headerList = await headers();
   const userEmail = headerList.get("x-supabase-user-email");
   const userName = headerList.get("x-supabase-user-name");
-  const greetingName = userName || userEmail;
+
+  // Google hands back a full name, but a heading reads better with just the
+  // first — and falls back to the email's local part rather than rendering a
+  // whole address at h1 size.
+  const firstName = userName?.split(" ")[0] || userEmail?.split("@")[0];
+  const greeting = greetingFor(new Date());
 
   return (
     <div className="min-h-screen bg-background">
@@ -20,11 +48,8 @@ export default async function HomePage() {
 
       <main className="mx-auto max-w-6xl px-4 py-6 md:px-6 md:py-8">
         <div className="flex flex-col gap-2">
-          <p className="text-sm text-muted-foreground">
-            {greetingName ? `Good morning, ${greetingName}` : "Good morning"}
-          </p>
           <h1 className="font-serif text-2xl font-bold tracking-tight text-foreground text-balance md:text-3xl">
-            Everything your farm needs, aggregated.
+            {firstName ? `${greeting}, ${firstName}` : greeting}
           </h1>
         </div>
 
