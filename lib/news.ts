@@ -1,17 +1,22 @@
-// Agriculture news feed backed by NewsAPI.org's `/v2/everything` endpoint.
-// Free-tier "Developer" keys are restricted to localhost/non-production use —
-// see https://newsapi.org/pricing before deploying this anywhere public.
-const NEWS_API_URL = "https://newsapi.org/v2/everything";
-const DEFAULT_QUERY = "agriculture OR farming OR pertanian OR petani OR crop";
+// Agriculture news feed backed by APITube (https://apitube.io/v1/news/everything),
+// scoped to the "industry.agriculture_news" topic.
+//
+// Note: trial/free-tier keys redact `href` (article URL), `image`, and
+// `source.domain` behind literal "[Upgrade subscription plan]" placeholder
+// text in the response. Those come through as `null` here rather than being
+// rendered as broken links — upgrade the plan to unlock them.
+const NEWS_API_URL = "https://api.apitube.io/v1/news/everything";
+const AGRICULTURE_TOPIC_ID = "industry.agriculture_news";
 const PAGE_SIZE = 12;
+const REDACTED_MARKER = "[Upgrade subscription plan]";
 
 export interface NewsArticle {
   id: string;
   title: string;
   description: string | null;
-  url: string;
+  url: string | null;
   imageUrl: string | null;
-  sourceName: string;
+  sourceName: string | null;
   publishedAt: string;
 }
 
@@ -22,60 +27,66 @@ export interface NewsPage {
 }
 
 interface RawArticle {
+  id?: number;
+  href?: string;
   title?: string;
   description?: string | null;
-  url?: string;
-  urlToImage?: string | null;
-  publishedAt?: string;
-  source?: { name?: string };
+  published_at?: string;
+  image?: string | null;
+  source?: { domain?: string };
 }
 
-export async function getAgricultureNews(
-  page = 1,
-  query = DEFAULT_QUERY
-): Promise<NewsPage> {
+function redactedToNull(value: string | null | undefined): string | null {
+  if (!value || value.includes(REDACTED_MARKER)) return null;
+  return value;
+}
+
+export async function getAgricultureNews(page = 1): Promise<NewsPage> {
   const apiKey = process.env.NEWS_API_KEY;
   if (!apiKey) {
     throw new Error("NEWS_API_KEY is not configured");
   }
 
   const url = new URL(NEWS_API_URL);
-  url.searchParams.set("q", query);
-  url.searchParams.set("sortBy", "publishedAt");
+  url.searchParams.set("topic.id", AGRICULTURE_TOPIC_ID);
+  url.searchParams.set("language.code", "en");
+  url.searchParams.set("sort.by", "published_at");
+  url.searchParams.set("sort.order", "desc");
   url.searchParams.set("page", String(page));
-  url.searchParams.set("pageSize", String(PAGE_SIZE));
+  url.searchParams.set("per_page", String(PAGE_SIZE));
 
-  console.log(`[news] fetching page=${page} query="${query}"`);
+  console.log(`[news] fetching page=${page} topic=${AGRICULTURE_TOPIC_ID}`);
 
   const res = await fetch(url, {
-    headers: { "X-Api-Key": apiKey },
+    headers: { "X-API-Key": apiKey },
   });
 
-  if (!res.ok) {
-    const errText = await res.text().catch(() => "");
-    console.error(`[news] request failed — status=${res.status}:`, errText);
-    throw new Error(`News API request failed: ${res.status} ${errText}`);
+  const json = await res.json().catch(() => null);
+
+  if (!res.ok || !json || json.status !== "ok") {
+    const message =
+      json?.errors?.[0]?.message ?? `${res.status} ${res.statusText}`;
+    console.error("[news] request failed:", message);
+    throw new Error(`APITube request failed: ${message}`);
   }
 
-  const json = await res.json();
-  const rawArticles: RawArticle[] = json?.articles ?? [];
-  const totalResults: number = json?.totalResults ?? 0;
+  const rawArticles: RawArticle[] = json.results ?? [];
 
   const articles: NewsArticle[] = rawArticles
-    .filter((raw) => raw?.title && raw.title !== "[Removed]")
-    .map((raw, i) => ({
-      id: `${page}-${i}-${raw.url ?? i}`,
+    .filter((raw) => raw?.title)
+    .map((raw) => ({
+      id: String(raw.id ?? `${page}-${raw.title}`),
       title: raw.title ?? "Untitled",
-      description: raw.description ?? null,
-      url: raw.url ?? "#",
-      imageUrl: raw.urlToImage ?? null,
-      sourceName: raw.source?.name ?? "Unknown source",
-      publishedAt: raw.publishedAt ?? "",
+      description: redactedToNull(raw.description ?? null),
+      url: redactedToNull(raw.href ?? null),
+      imageUrl: redactedToNull(raw.image ?? null),
+      sourceName: redactedToNull(raw.source?.domain ?? null),
+      publishedAt: raw.published_at ?? "",
     }));
 
   return {
     articles,
     page,
-    hasMore: page * PAGE_SIZE < totalResults,
+    hasMore: Boolean(json.has_next_pages),
   };
 }

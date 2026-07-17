@@ -10,11 +10,16 @@ function formatDate(iso: string) {
 }
 
 function NewsCard({ article }: { article: NewsArticle }) {
+  // The current NEWS_API_KEY's plan redacts article URLs/images/source domain
+  // (see lib/news.ts) — those come through as null, so this renders as a
+  // plain non-clickable card instead of a link to nowhere.
+  const Wrapper = article.url ? "a" : "div";
+
   return (
-    <a
-      href={article.url}
-      target="_blank"
-      rel="noopener noreferrer"
+    <Wrapper
+      {...(article.url
+        ? { href: article.url, target: "_blank", rel: "noopener noreferrer" }
+        : {})}
       className="group flex gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
     >
       {article.imageUrl && (
@@ -32,7 +37,9 @@ function NewsCard({ article }: { article: NewsArticle }) {
       )}
       <div className="flex min-w-0 flex-col">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span className="font-semibold text-secondary-foreground">{article.sourceName}</span>
+          {article.sourceName && (
+            <span className="font-semibold text-secondary-foreground">{article.sourceName}</span>
+          )}
           {article.publishedAt && <span>· {formatDate(article.publishedAt)}</span>}
         </div>
         <h3 className="mt-1 line-clamp-2 font-serif text-base font-bold text-foreground group-hover:text-primary">
@@ -42,7 +49,7 @@ function NewsCard({ article }: { article: NewsArticle }) {
           <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{article.description}</p>
         )}
       </div>
-    </a>
+    </Wrapper>
   );
 }
 
