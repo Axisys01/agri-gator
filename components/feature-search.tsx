@@ -29,7 +29,9 @@ export function FeatureSearch() {
   // of local rows, so filtering costs nothing. The location search needs a
   // debounce because it hits /api/locations; this doesn't.
   const q = query.trim().toLowerCase();
-  const results = q ? features.filter((feature) => haystack(feature).includes(q)) : [];
+  const results = q
+    ? features.filter((feature) => haystack(feature).includes(q))
+    : [];
 
   useEffect(() => {
     if (!open) return;
@@ -52,7 +54,10 @@ export function FeatureSearch() {
   const showPanel = open && q.length > 0;
 
   return (
-    <div ref={containerRef} className="relative ml-auto hidden md:block md:w-72">
+    <div
+      ref={containerRef}
+      className="relative ml-auto hidden md:block md:w-72"
+    >
       <div className="flex items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-sm text-muted-foreground">
         <Search className="size-4 shrink-0" aria-hidden="true" />
         <input
@@ -98,7 +103,7 @@ export function FeatureSearch() {
                       </span>
                       {feature.status === "soon" && (
                         <span className="shrink-0 rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-semibold text-accent">
-                          Phase 2
+                          Under Development
                         </span>
                       )}
                     </Link>
@@ -107,7 +112,9 @@ export function FeatureSearch() {
               })}
             </ul>
           ) : (
-            <p className="px-3 py-3 text-sm text-muted-foreground">No modules found.</p>
+            <p className="px-3 py-3 text-sm text-muted-foreground">
+              No modules found.
+            </p>
           )}
         </div>
       )}
