@@ -32,16 +32,28 @@ export default function PlantingCalendar() {
     setError(null);
     setResult(null);
 
+    console.log("[planting-calendar] requesting advice", { adm4: location.adm4, cropId });
+
     try {
       const res = await fetch("/api/planting-advice", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ adm4: location.adm4, cropId }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Something went wrong");
+
+      const data = await res.json().catch((parseErr) => {
+        console.error("[planting-calendar] response wasn't valid JSON", parseErr);
+        return null;
+      });
+
+      console.log("[planting-calendar] response", { status: res.status, data });
+
+      if (!res.ok || !data) {
+        throw new Error(data?.error ?? `Request failed with status ${res.status}`);
+      }
       setResult(data);
     } catch (err) {
+      console.error("[planting-calendar] request failed", err);
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setLoading(false);

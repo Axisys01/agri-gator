@@ -79,14 +79,14 @@ export function FeatureGrid() {
       </div>
 
       {/* Mobile: icon + one-word title */}
-      <div className="grid grid-cols-4 gap-3 sm:hidden">
+      <div className="grid grid-cols-3 gap-3 sm:hidden">
         {features.map((feature) => (
           <FeatureIcon key={feature.id} feature={feature} />
         ))}
       </div>
 
       {/* Tablet / desktop: full cards */}
-      <div className="hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-4">
+      <div className="hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3">
         {features.map((feature) => (
           <FeatureCard key={feature.id} feature={feature} />
         ))}

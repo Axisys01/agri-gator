@@ -3,7 +3,8 @@ import {
   ScanLine,
   LineChart,
   Calculator,
-  GraduationCap,
+  Sprout,
+  Newspaper,
   type LucideIcon,
 } from "lucide-react"
 
@@ -109,15 +110,15 @@ export const features: Feature[] = [
     status: "live",
   },
   {
-    id: "learning-hub",
+    id: "crop-yield-prediction",
     module: "Module 5",
-    name: "Learning Hub",
-    short: "Learn",
+    name: "Crop Yield Prediction",
+    short: "Yield",
     description:
-      "Official Kementan Cybex & government videos curated into one categorized library for young and new farmers.",
-    aggregates: "Government education content",
-    href: "/learning-hub",
-    icon: GraduationCap,
+      "Estimates expected yield (hg/ha) from rainfall, pesticide use, planting year and crop type using a Random Forest model trained on historical FAO data.",
+    aggregates: "Yield modeling · Random Forest",
+    href: "/crop-yield-prediction",
+    icon: Sprout,
     phase: "planning",
     stage: "Before planting",
     status: "live",
@@ -135,5 +136,19 @@ export const features: Feature[] = [
     phase: "growing",
     stage: "During growing season",
     status: "soon",
+  },
+  {
+    id: "agriculture-news",
+    module: "Module 6",
+    name: "Agriculture News",
+    short: "News",
+    description:
+      "Aggregates the latest farming, crop, and agriculture policy news from multiple sources into one endless-scroll feed.",
+    aggregates: "News aggregation · NewsAPI",
+    href: "/agriculture-news",
+    icon: Newspaper,
+    phase: "planning",
+    stage: "Before planting",
+    status: "live",
   },
 ]
