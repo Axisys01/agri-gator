@@ -1,6 +1,5 @@
-// Client for BMKG's public open-data feeds. Attribution to BMKG (Badan
-// Meteorologi, Klimatologi, dan Geofisika) is required wherever this data
-// is displayed — see https://data.bmkg.go.id/prakiraan-cuaca/.
+// BMKG public open-data client. Attribution to BMKG (Badan Meteorologi, Klimatologi, dan
+// Geofisika) is required wherever this data is displayed: see https://data.bmkg.go.id/prakiraan-cuaca/.
 const WEATHER_URL = "https://api.bmkg.go.id/publik/prakiraan-cuaca";
 const NOWCAST_ALERTS_URL = "https://www.bmkg.go.id/alerts/nowcast/id";
 
@@ -91,24 +90,14 @@ function extractTag(block: string, tag: string): string {
     .trim();
 }
 
-/**
- * Pulls BMKG's nowcast/CAP early-warning RSS feed (extreme weather alerts,
- * updated in near real time) and filters it down to items that mention any
- * of the given region names (e.g. a farmer's kabupaten/kota or provinsi).
- */
+/** Pulls BMKG's nowcast/CAP early-warning RSS feed and filters to items mentioning any of the given region names (e.g. kabupaten/kota or provinsi). */
 export async function getActiveWeatherAlerts(
   regionNames: string[]
 ): Promise<WeatherAlert[]> {
   const res = await fetch(NOWCAST_ALERTS_URL, {
     headers: { Accept: "application/rss+xml, application/xml, text/xml" },
-    // The header renders on every page, and Next doesn't cache fetch by
-    // default — uncached, each navigation would put BMKG on the critical path
-    // of the whole app, so an outage there would become an outage here. The
-    // feed is national (identical bytes for every user; filtering happens
-    // below), so one cached copy serves everyone.
-    //
-    // Kept deliberately short: observed nowcasts publish only ~10 minutes
-    // ahead of the event, so a long window would eat the entire warning.
+    // Cached rather than per-request: the feed is identical for every user (filtering happens
+    // below), and 180s is kept short since nowcasts publish only ~10 minutes ahead of the event.
     next: { revalidate: 180 },
   });
 

@@ -5,8 +5,7 @@ import { MapPin } from "lucide-react";
 import { saveUserLocation } from "@/app/actions/location";
 import type { LocationResult } from "@/lib/wilayah";
 
-// The dataset's label is "desa, kecamatan, kotkab, provinsi" — too long for a
-// header chip, so show the village and its regency and keep the rest on hover.
+// The dataset's full label ("desa, kecamatan, kotkab, provinsi") is too long for a header chip, so show village + regency and keep the rest on hover.
 function shortLabel(location: LocationResult) {
   return `${location.desa}, ${location.kotkab}`;
 }
@@ -79,8 +78,7 @@ export function HeaderLocationPicker({ initial }: { initial: LocationResult | nu
 
   return (
     <div ref={containerRef} className="relative shrink-0">
-      {/* Icon-only circle on mobile (matching the bell), widening to a labelled
-          pill from sm up where there's room for the village name. */}
+      {/* Icon-only circle on mobile (matches the bell); widens to a labelled pill from sm up where there's room for the village name. */}
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
@@ -97,8 +95,7 @@ export function HeaderLocationPicker({ initial }: { initial: LocationResult | nu
       </button>
 
       {open && (
-        // Anchoring right-0 to the button would overflow the left edge on a
-        // phone, so drop to a full-width sheet under the header below sm.
+        // right-0 anchoring would overflow the left edge on a phone, so use a full-width sheet under the header below sm.
         <div className="fixed inset-x-4 top-16 z-30 rounded-xl border border-border bg-card p-3 shadow-lg sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2 sm:w-80">
           <input
             autoFocus

@@ -10,8 +10,8 @@ import { type CommodityTrend } from "@/lib/dashboard-data"
 type Status = "idle" | "loading" | "done"
 
 const PRICE_TYPE_TABS: { key: PriceTypeKey; label: string; hint: string }[] = [
-  { key: "produsen", label: "What I get", hint: "Produsen — the farm-gate price" },
-  { key: "tradisional", label: "What it sells for", hint: "Pasar Tradisional — the market price" },
+  { key: "produsen", label: "What I get", hint: "Produsen: the farm-gate price" },
+  { key: "tradisional", label: "What it sells for", hint: "Pasar Tradisional: the market price" },
 ]
 
 export function PriceSearch({ pinned, province }: { pinned: string[]; province: string }) {
@@ -23,8 +23,7 @@ export function PriceSearch({ pinned, province }: { pinned: string[]; province: 
   const [shownProvince, setShownProvince] = useState(province)
   const [nationalFallbacks, setNationalFallbacks] = useState<string[]>([])
 
-  // Seeds which hearts start filled. The buttons own their state after that, so
-  // this doesn't need to track toggles made during the session.
+  // Seeds which hearts start filled; the buttons own their state after that.
   const pinnedSet = new Set(pinned)
 
   async function search(term: string, type: PriceTypeKey) {
@@ -44,8 +43,7 @@ export function PriceSearch({ pinned, province }: { pinned: string[]; province: 
     await search(trimmed, priceType)
   }
 
-  // Switching the tab should re-run the last search rather than silently leave
-  // the old price type's numbers on screen under the new label.
+  // Switching tabs re-runs the last search so stale numbers don't sit under the new label.
   async function selectPriceType(key: PriceTypeKey) {
     setPriceType(key)
     if (searchedTerm) await search(searchedTerm, key)
@@ -57,7 +55,7 @@ export function PriceSearch({ pinned, province }: { pinned: string[]; province: 
         Search market prices
       </h1>
       <p className="mt-2 max-w-md text-center text-sm text-muted-foreground">
-        Look up any commodity tracked by PIHPS Nasional (Bank Indonesia) — what you&apos;d be
+        Look up any commodity tracked by PIHPS Nasional (Bank Indonesia): what you&apos;d be
         paid for it, and what it sells for at the pasar.
       </p>
 
@@ -95,7 +93,7 @@ export function PriceSearch({ pinned, province }: { pinned: string[]; province: 
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search a commodity — beras, cabai, bawang…"
+            placeholder="Search a commodity: beras, cabai, bawang…"
             className="w-full bg-transparent outline-none placeholder:text-muted-foreground"
             aria-label="Search commodity"
           />

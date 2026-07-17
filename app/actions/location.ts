@@ -25,10 +25,9 @@ export async function saveUserLocation(input: unknown): Promise<{ error?: string
 
   const supabase = await createClient();
 
-  // Server Functions are POSTs to the calling route rather than routes of their
-  // own, so proxy.ts auth can't be relied on here — verify the session
-  // ourselves. user_id comes from that session and never from the caller, so a
-  // client can't write a row onto someone else's account.
+  // Server Functions POST to the calling route, so proxy.ts auth doesn't apply here:
+  // we verify the session ourselves. user_id comes from that session, not the
+  // caller, so a client can't write onto someone else's account.
   const {
     data: { user },
   } = await supabase.auth.getUser();

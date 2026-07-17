@@ -22,7 +22,7 @@ export default function CropYieldPredictionPage() {
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Estimate expected yield (hg/ha) from rainfall, pesticide use,
-            planting year, and crop type — trained on historical FAO yield data
+            planting year, and crop type, trained on historical FAO yield data
             with a Random Forest model.
           </p>
         </div>

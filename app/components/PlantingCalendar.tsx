@@ -21,8 +21,8 @@ export default function PlantingCalendar({
 }: {
   initialLocation?: LocationResult | null;
 }) {
-  // Seeded from the location saved on the account, so submitting works right
-  // away without the farmer re-picking a village they already told us about.
+  // Seeded from the saved location so submitting works without re-picking a
+  // village already on file.
   const [location, setLocation] = useState<LocationResult | null>(initialLocation ?? null);
   const [cropId, setCropId] = useState(CROPS[0].id);
   const [result, setResult] = useState<AdviceResponse | null>(null);

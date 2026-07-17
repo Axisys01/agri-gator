@@ -7,7 +7,7 @@ const sora = Sora({ subsets: ["latin"], variable: "--font-sora" });
 const nunitoSans = Nunito_Sans({ subsets: ["latin"], variable: "--font-nunito-sans" });
 
 export const metadata: Metadata = {
-  title: "Agri-Gator — Farming, Aggregated",
+  title: "Agri-Gator: Farming, Aggregated",
   description:
     "Agri-Gator brings weather, market prices, dosage guidance and learning into one app for Indonesian farmers.",
   icons: {

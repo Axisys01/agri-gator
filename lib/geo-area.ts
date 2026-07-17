@@ -1,10 +1,6 @@
-// Geodesic polygon area via spherical excess — the same approach turf.js uses,
-// reimplemented because it's ~15 lines and turf is a large dependency for one
-// function.
-//
-// Treating lat/lng as flat X/Y would be wrong: a degree of longitude is ~110km
-// at the equator and shrinks toward the poles, so a naive planar calculation
-// skews with latitude. This number multiplies through into a pesticide dose, so
+// Geodesic polygon area via spherical excess (same approach turf.js uses, reimplemented since
+// it's ~15 lines and turf is a large dependency for one function). Lat/lng aren't flat X/Y: a
+// degree of longitude shrinks toward the poles, and this number feeds into a pesticide dose, so
 // it has to be right rather than close.
 const EARTH_RADIUS_M = 6378137; // WGS84 equatorial radius
 

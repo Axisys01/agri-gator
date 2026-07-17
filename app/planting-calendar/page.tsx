@@ -27,10 +27,7 @@ export default async function PlantingCalendarPage() {
         </p>
 
         <div className="mt-8 w-full">
-          {/* Keyed on the saved location: initialLocation only seeds state on
-              first render, so without this, changing location from the header
-              chip would leave a stale village in the input and advice for the
-              old place still on screen. */}
+          {/* Keyed on location: initialLocation only seeds state on first render, so without this, changing location from the header chip would leave a stale village and advice on screen. */}
           <PlantingCalendar
             key={location?.adm4 ?? "none"}
             initialLocation={location}

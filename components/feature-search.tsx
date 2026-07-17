@@ -5,8 +5,7 @@ import Link from "next/link";
 import { Search } from "lucide-react";
 import { features, type Feature } from "@/lib/dashboard-data";
 
-// Match on everything a farmer might type, not just the name — "weather" should
-// surface the planting calendar even though its name never says the word.
+// Matches on everything a farmer might type, not just the name: "weather" surfaces the planting calendar even though its name never says the word.
 function haystack(feature: Feature) {
   return [
     feature.name,
@@ -25,9 +24,7 @@ export function FeatureSearch() {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Derived straight from query on every render: the feature list is a handful
-  // of local rows, so filtering costs nothing. The location search needs a
-  // debounce because it hits /api/locations; this doesn't.
+  // Filtered on every render since the feature list is tiny and local; no debounce needed here, unlike the location search which hits /api/locations.
   const q = query.trim().toLowerCase();
   const results = q
     ? features.filter((feature) => haystack(feature).includes(q))

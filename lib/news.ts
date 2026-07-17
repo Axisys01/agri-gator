@@ -1,10 +1,6 @@
-// Agriculture news feed backed by APITube (https://apitube.io/v1/news/everything),
-// scoped to the "industry.agriculture_news" topic.
-//
-// Note: trial/free-tier keys redact `href` (article URL), `image`, and
-// `source.domain` behind literal "[Upgrade subscription plan]" placeholder
-// text in the response. Those come through as `null` here rather than being
-// rendered as broken links — upgrade the plan to unlock them.
+// Agriculture news via APITube, scoped to industry.agriculture_news. Trial keys redact
+// href/image/source.domain behind an "[Upgrade subscription plan]" placeholder; those
+// come through as null here instead of rendering as broken links.
 const NEWS_API_URL = "https://api.apitube.io/v1/news/everything";
 const AGRICULTURE_TOPIC_ID = "industry.agriculture_news";
 const PAGE_SIZE = 12;

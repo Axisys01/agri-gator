@@ -14,10 +14,9 @@ export async function getUserWeatherAlerts(): Promise<UserWeatherAlerts> {
   if (!location) return { location: null, alerts: [] };
 
   try {
-    // BMKG names the provinsi in the alert title ("Hujan Lebat ... di Riau")
-    // and lists kecamatan in the description, but never the kabupaten/kota —
-    // so kecamatan is what gives a precise local match, and provinsi is a
-    // deliberately broad fallback. Over-warning beats under-warning here.
+    // BMKG names provinsi in the alert title and kecamatan in the description but never
+    // kabupaten/kota, so kecamatan gives the precise match and provinsi is the broad fallback;
+    // over-warning beats under-warning here.
     const alerts = await getActiveWeatherAlerts([
       location.kecamatan,
       location.kotkab,
@@ -25,8 +24,7 @@ export async function getUserWeatherAlerts(): Promise<UserWeatherAlerts> {
     ]);
     return { location, alerts };
   } catch (error) {
-    // This feeds the header, which renders on every page — letting a BMKG
-    // outage throw would take the entire app down with it.
+    // This feeds the header, which renders on every page, so a BMKG outage must not throw and take the app down with it.
     console.error("Failed to load BMKG alerts:", error);
     return { location, alerts: [] };
   }

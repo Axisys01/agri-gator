@@ -2,9 +2,8 @@ import "server-only";
 
 import { createClient } from "@/lib/supabase/server";
 
-// RLS limits select to auth.uid() = user_id, so an unfiltered query returns
-// just this user's rows — same reasoning as getUserLocation, and it keeps us
-// off an extra Supabase Auth round trip.
+// RLS limits select to auth.uid() = user_id, so an unfiltered query already returns just
+// this user's rows, same reasoning as getUserLocation.
 export async function getUserCommodities(): Promise<string[]> {
   const supabase = await createClient();
 

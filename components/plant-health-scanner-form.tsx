@@ -182,7 +182,7 @@ export function PlantHealthScannerForm() {
               <ul className="mt-3 space-y-1 text-xs text-muted-foreground">
                 {predictions.slice(1).map((p) => (
                   <li key={p.label}>
-                    {p.label} — {(p.confidence * 100).toFixed(1)}%
+                    {p.label}: {(p.confidence * 100).toFixed(1)}%
                   </li>
                 ))}
               </ul>

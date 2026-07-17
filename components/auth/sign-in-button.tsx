@@ -3,8 +3,7 @@
 import type { ReactNode } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-// The header chip. Callers that need a different shape (the landing hero) pass
-// their own className rather than this being restyled per usage.
+// Default header-chip style; callers needing a different shape (e.g. the landing hero) pass their own className instead of restyling this one.
 const HEADER_CLASS =
   "flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/80";
 

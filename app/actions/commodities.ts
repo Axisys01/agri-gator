@@ -16,9 +16,8 @@ export async function toggleUserCommodity(
 
   const supabase = await createClient();
 
-  // Server Functions are POSTs to the calling route rather than routes of their
-  // own, so proxy.ts auth can't be relied on here. user_id comes from the
-  // session and never from the caller, so nobody can pin onto another account.
+  // Server Functions POST to the calling route, so proxy.ts auth doesn't apply here;
+  // user_id comes from the session, not the caller, so nobody can pin another account.
   const {
     data: { user },
   } = await supabase.auth.getUser();

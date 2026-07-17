@@ -13,9 +13,8 @@ export default function LocationSearch({
   const [query, setQuery] = useState(initial?.label ?? "");
   const [results, setResults] = useState<LocationResult[]>([]);
   const [loading, setLoading] = useState(false);
-  // Seeded alongside query so the effect below treats a prefilled location as
-  // an already-made choice: query === selectedLabel short-circuits the search
-  // and keeps the dropdown shut on load.
+  // Matches query so a prefilled location counts as already selected, skipping
+  // the search and keeping the dropdown closed on load.
   const [selectedLabel, setSelectedLabel] = useState<string | null>(initial?.label ?? null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 

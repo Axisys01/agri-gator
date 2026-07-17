@@ -83,7 +83,7 @@ Note the forecast only covers 3 days; be explicit when longer-term timing should
 also consider the regional wet/dry season pattern rather than the short-term forecast alone.`;
 
   const model = process.env.GEMINI_MODEL || DEFAULT_MODEL;
-  console.log(`[gemini] requesting advice — model=${model} endpoint=${INTERACTIONS_URL}`);
+  console.log(`[gemini] requesting advice, model=${model} endpoint=${INTERACTIONS_URL}`);
 
   const res = await fetch(INTERACTIONS_URL, {
     method: "POST",
@@ -110,17 +110,17 @@ also consider the regional wet/dry season pattern rather than the short-term for
     if (res.status === 429) {
       console.error(`[gemini] 429 RATE LIMITED (model=${model}):`, errText);
       throw new Error(
-        `Gemini rate limit reached (429) for model "${model}". You've hit your quota — check usage at aistudio.google.com or wait for it to reset.`
+        `Gemini rate limit reached (429) for model "${model}". You've hit your quota: check usage at aistudio.google.com or wait for it to reset.`
       );
     }
-    console.error(`[gemini] request failed — status=${res.status} model=${model}:`, errText);
+    console.error(`[gemini] request failed, status=${res.status} model=${model}:`, errText);
     throw new Error(`Gemini request failed: ${res.status} ${errText}`);
   }
 
   console.log("[gemini] response OK, parsing output...");
   const json = await res.json();
-  // `steps` can include non-output entries (e.g. `type: "thought"`) before the
-  // actual `model_output` step, so find it rather than assuming steps[0].
+  // steps can include non-output entries (e.g. type: "thought") before model_output, so find it
+  // rather than assume steps[0].
   const modelOutputStep = (json?.steps ?? [])
     .filter((step: { type?: string }) => step?.type === "model_output")
     .pop();
