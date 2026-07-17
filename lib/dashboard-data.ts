@@ -87,6 +87,20 @@ export const features: Feature[] = [
     status: "live",
   },
   {
+    id: "plant-health-scanner",
+    module: "Module 2",
+    name: "Plant Health Scanner",
+    short: "Scan",
+    description:
+      "Photo-based pest & disease detection via image classification. Part of the full aggregator vision.",
+    aggregates: "Diagnostic expertise",
+    href: "/plant-health-scanner",
+    icon: ScanLine,
+    phase: "growing",
+    stage: "During growing season",
+    status: "soon",
+  },
+  {
     id: "market-prices",
     module: "Module 3",
     name: "Market Price Board",
@@ -127,20 +141,6 @@ export const features: Feature[] = [
     phase: "planning",
     stage: "Before planting",
     status: "live",
-  },
-  {
-    id: "plant-health-scanner",
-    module: "Module 2",
-    name: "Plant Health Scanner",
-    short: "Scan",
-    description:
-      "Photo-based pest & disease detection via image classification. Part of the full aggregator vision.",
-    aggregates: "Diagnostic expertise",
-    href: "/plant-health-scanner",
-    icon: ScanLine,
-    phase: "growing",
-    stage: "During growing season",
-    status: "soon",
   },
   {
     id: "agriculture-news",
