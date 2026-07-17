@@ -121,7 +121,7 @@ export const features: Feature[] = [
   },
   {
     id: "market-prices",
-    module: "Module 3",
+    module: "Module 2",
     name: "Market Price Board",
     short: "Prices",
     description:
@@ -135,7 +135,7 @@ export const features: Feature[] = [
   },
   {
     id: "dosage-calculator",
-    module: "Module 4",
+    module: "Module 3",
     name: "Dosage Calculator",
     short: "Dosage",
     description:
@@ -149,7 +149,7 @@ export const features: Feature[] = [
   },
   {
     id: "crop-yield-prediction",
-    module: "Module 5",
+    module: "Module 4",
     name: "Crop Yield Prediction",
     short: "Yield",
     description:
@@ -163,7 +163,7 @@ export const features: Feature[] = [
   },
   {
     id: "agriculture-news",
-    module: "Module 6",
+    module: "Module 5",
     name: "Agriculture News",
     short: "News",
     description:
