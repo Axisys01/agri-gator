@@ -5,7 +5,7 @@ import { CROP_OPTIONS, TRAINING_YEAR_RANGE } from "@/lib/yield-model/predict";
 
 export default function CropYieldPredictionPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="relative min-h-screen bg-background">
       <div
         className="pointer-events-none absolute inset-0 z-0 mx-auto max-w-6xl border-x border-border"
         aria-hidden="true"

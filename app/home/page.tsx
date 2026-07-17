@@ -54,7 +54,10 @@ export default async function HomePage() {
   const greeting = greetingFor(new Date());
 
   return (
-    <div className="min-h-screen bg-background">
+    // relative is load-bearing: without a positioned ancestor the hairlines
+    // below resolve inset-0 against the viewport and stop after one screen
+    // rather than running the full scrollable height.
+    <div className="relative min-h-screen bg-background">
       <div
         className="pointer-events-none absolute inset-0 z-0 mx-auto max-w-6xl border-x border-border"
         aria-hidden="true"
