@@ -1,14 +1,21 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
-import { ChevronDown, TrendingDown, TrendingUp } from "lucide-react"
-import { FavoriteCommodityButton } from "@/components/favorite-commodity-button"
-import { type CommodityTrend } from "@/lib/dashboard-data"
+import { useState } from "react";
+import Link from "next/link";
+import {
+  Area,
+  AreaChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import { ChevronDown, TrendingDown, TrendingUp } from "lucide-react";
+import { FavoriteCommodityButton } from "@/components/favorite-commodity-button";
+import { type CommodityTrend } from "@/lib/dashboard-data";
 
 function formatRupiah(currency: string, value: number) {
-  return `${currency} ${value.toLocaleString("id-ID")}`
+  return `${currency} ${value.toLocaleString("id-ID")}`;
 }
 
 function formatDateLabel(isoDate: string) {
@@ -16,21 +23,30 @@ function formatDateLabel(isoDate: string) {
     day: "numeric",
     month: "long",
     year: "numeric",
-  })
+  });
 }
 
 function trendColor(isUp: boolean) {
-  return isUp ? "var(--color-chart-1)" : "var(--color-destructive)"
+  return isUp ? "var(--color-chart-1)" : "var(--color-destructive)";
 }
 
-function Sparkline({ commodity, showTooltip }: { commodity: CommodityTrend; showTooltip?: boolean }) {
-  const isUp = commodity.changePct >= 0
-  const strokeColor = trendColor(isUp)
-  const gradientId = `grad-${commodity.id}`
+function Sparkline({
+  commodity,
+  showTooltip,
+}: {
+  commodity: CommodityTrend;
+  showTooltip?: boolean;
+}) {
+  const isUp = commodity.changePct >= 0;
+  const strokeColor = trendColor(isUp);
+  const gradientId = `grad-${commodity.id}`;
 
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <AreaChart data={commodity.history} margin={{ top: 4, right: 0, bottom: 0, left: 0 }}>
+      <AreaChart
+        data={commodity.history}
+        margin={{ top: 4, right: 0, bottom: 0, left: 0 }}
+      >
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={strokeColor} stopOpacity={0.28} />
@@ -58,10 +74,16 @@ function Sparkline({ commodity, showTooltip }: { commodity: CommodityTrend; show
             ]}
           />
         )}
-        <Area type="monotone" dataKey="value" stroke={strokeColor} strokeWidth={2} fill={`url(#${gradientId})`} />
+        <Area
+          type="monotone"
+          dataKey="value"
+          stroke={strokeColor}
+          strokeWidth={2}
+          fill={`url(#${gradientId})`}
+        />
       </AreaChart>
     </ResponsiveContainer>
-  )
+  );
 }
 
 /**
@@ -77,22 +99,28 @@ function NationalBadge() {
     >
       Nasional
     </span>
-  )
+  );
 }
 
 function ChangeBadge({ commodity }: { commodity: CommodityTrend }) {
-  const isUp = commodity.changePct >= 0
+  const isUp = commodity.changePct >= 0;
   return (
     <span
       className={`flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold ${
-        isUp ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"
+        isUp
+          ? "bg-primary/10 text-primary"
+          : "bg-destructive/10 text-destructive"
       }`}
     >
-      {isUp ? <TrendingUp className="size-3.5" aria-hidden="true" /> : <TrendingDown className="size-3.5" aria-hidden="true" />}
+      {isUp ? (
+        <TrendingUp className="size-3.5" aria-hidden="true" />
+      ) : (
+        <TrendingDown className="size-3.5" aria-hidden="true" />
+      )}
       {isUp ? "+" : ""}
       {commodity.changePct}%
     </span>
-  )
+  );
 }
 
 /* Desktop / tablet full card */
@@ -101,11 +129,11 @@ export function PriceCard({
   isPinned,
   isNational,
 }: {
-  commodity: CommodityTrend
+  commodity: CommodityTrend;
   /* Omitted where there's no signed-in user to pin for — the heart is hidden. */
-  isPinned?: boolean
+  isPinned?: boolean;
   /* No local figure for this one, so it's the national average instead. */
-  isNational?: boolean
+  isNational?: boolean;
 }) {
   return (
     <article className="flex flex-col rounded-2xl border border-border bg-card p-5 shadow-sm">
@@ -122,7 +150,10 @@ export function PriceCard({
         <div className="flex shrink-0 items-center gap-1.5">
           <ChangeBadge commodity={commodity} />
           {isPinned !== undefined && (
-            <FavoriteCommodityButton commodity={commodity.name} initialPinned={isPinned} />
+            <FavoriteCommodityButton
+              commodity={commodity.name}
+              initialPinned={isPinned}
+            />
           )}
         </div>
       </div>
@@ -135,9 +166,11 @@ export function PriceCard({
         <Sparkline commodity={commodity} showTooltip />
       </div>
 
-      <p className="mt-2 text-[11px] text-muted-foreground">Source: {commodity.source}</p>
+      <p className="mt-2 text-[11px] text-muted-foreground">
+        Source: {commodity.source}
+      </p>
     </article>
-  )
+  );
 }
 
 /* Mobile compact, expandable row */
@@ -146,11 +179,11 @@ function PriceRow({
   isPinned,
   isNational,
 }: {
-  commodity: CommodityTrend
-  isPinned?: boolean
-  isNational?: boolean
+  commodity: CommodityTrend;
+  isPinned?: boolean;
+  isNational?: boolean;
 }) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   return (
     <div className="rounded-2xl border border-border bg-card shadow-sm">
@@ -193,7 +226,10 @@ function PriceRow({
         </button>
 
         {isPinned !== undefined && (
-          <FavoriteCommodityButton commodity={commodity.name} initialPinned={isPinned} />
+          <FavoriteCommodityButton
+            commodity={commodity.name}
+            initialPinned={isPinned}
+          />
         )}
       </div>
 
@@ -202,11 +238,13 @@ function PriceRow({
           <div className="h-28 w-full">
             <Sparkline commodity={commodity} showTooltip />
           </div>
-          <p className="mt-2 text-[11px] text-muted-foreground">Source: {commodity.source} · Last 10 weeks</p>
+          <p className="mt-2 text-[11px] text-muted-foreground">
+            Source: {commodity.source} · Last 1 month
+          </p>
         </div>
       )}
     </div>
-  )
+  );
 }
 
 export function CommodityPriceCharts({
@@ -216,24 +254,27 @@ export function CommodityPriceCharts({
   priceTypeLabel,
   nationalFallbacks,
 }: {
-  commodities: CommodityTrend[]
-  pinned: string[]
-  province: string
-  priceTypeLabel: string
-  nationalFallbacks: string[]
+  commodities: CommodityTrend[];
+  pinned: string[];
+  province: string;
+  priceTypeLabel: string;
+  nationalFallbacks: string[];
 }) {
-  const pinnedSet = new Set(pinned)
-  const nationalSet = new Set(nationalFallbacks)
+  const pinnedSet = new Set(pinned);
+  const nationalSet = new Set(nationalFallbacks);
   // Nothing pinned yet means these are the stock defaults, not the farmer's
   // pick — say so, otherwise the list silently changing on the first heart
   // looks like a bug.
-  const showingDefaults = pinned.length === 0
+  const showingDefaults = pinned.length === 0;
 
   return (
     <section aria-labelledby="prices-heading">
       <div className="mb-3 flex items-end justify-between gap-2">
         <div>
-          <h2 id="prices-heading" className="font-serif text-lg font-bold text-foreground">
+          <h2
+            id="prices-heading"
+            className="font-serif text-lg font-bold text-foreground"
+          >
             Market Prices
           </h2>
           {/* Which province and price type these are is load-bearing: a national
@@ -248,7 +289,10 @@ export function CommodityPriceCharts({
             </p>
           )}
         </div>
-        <Link href="/prices" className="text-sm font-semibold text-primary hover:underline">
+        <Link
+          href="/prices"
+          className="text-sm font-semibold text-primary hover:underline"
+        >
           View all
         </Link>
       </div>
@@ -277,5 +321,5 @@ export function CommodityPriceCharts({
         ))}
       </div>
     </section>
-  )
+  );
 }

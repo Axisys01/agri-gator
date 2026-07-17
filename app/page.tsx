@@ -1,9 +1,9 @@
-import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { RotatingWord } from "@/components/rotating-word";
 import { features } from "@/lib/dashboard-data";
 import { SignInButton } from "@/components/auth/sign-in-button";
+import { FeatureShowcase } from "@/components/feature-showcase";
 
 export default function LandingPage() {
   const rotatingWords = features.map((f) => f.short);
@@ -57,19 +57,9 @@ export default function LandingPage() {
             </SignInButton>
           </div>
 
-          {/* Hero image — the mockup is a transparent portrait PNG, so it needs
-              a width cap rather than the full-bleed landscape frame, and no
-              border box of its own. */}
-          <div className="relative mt-14 w-full max-w-[260px] md:max-w-[300px]">
-            <Image
-              src="/iphone-mockup.png"
-              alt="Agri-Gator open on a phone, showing the landing page"
-              width={1419}
-              height={2796}
-              className="h-auto w-full"
-              preload
-            />
-          </div>
+          {/* The landing page's job is to show the modules exist, not assert it.
+              Tabs swap the phone between real screenshots of each one. */}
+          <FeatureShowcase />
         </section>
       </main>
 
