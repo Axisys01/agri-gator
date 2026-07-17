@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { RotatingWord } from "@/components/rotating-word";
 import { features } from "@/lib/dashboard-data";
+import { SignInButton } from "@/components/auth/sign-in-button";
 
 export default function LandingPage() {
   const rotatingWords = features.map((f) => f.short);
@@ -22,8 +23,11 @@ export default function LandingPage() {
         {/* Hero */}
         <section className="mx-auto flex max-w-6xl flex-col items-center px-4 pb-16 pt-16 text-center md:px-6 md:pb-24 md:pt-24">
           <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-1.5 text-xs font-medium text-muted-foreground">
-            <span className="size-1.5 rounded-full bg-primary" aria-hidden="true" />
-            For every Indonesian farmer
+            <span
+              className="size-1.5 rounded-full bg-primary"
+              aria-hidden="true"
+            />
+            For every Indonesian farmer....
           </span>
 
           {/* Motto — biggest text */}
@@ -39,25 +43,18 @@ export default function LandingPage() {
           </p>
 
           <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground text-pretty md:text-lg">
-            Weather, market prices, dosage guidance and learning — every tool a farmer needs,
-            aggregated into one place.
+            Weather, market prices, dosage guidance and learning — every tool a
+            farmer needs, aggregated into one place.
           </p>
 
-          {/* Sign up button */}
+          {/* Google OAuth makes signing up and signing in the same act, so this
+              is one button rather than the two the mockup had — both of which
+              only linked to /home and got bounced straight back by the proxy. */}
           <div className="mt-9 flex flex-col items-center gap-3 sm:flex-row">
-            <a
-              href="/home"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-8 py-3.5 text-base font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
-            >
+            <SignInButton className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-8 py-3.5 text-base font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90">
               Sign up free
               <ArrowRight className="size-4" aria-hidden="true" />
-            </a>
-            <a
-              href="/home"
-              className="inline-flex items-center justify-center rounded-full border border-border bg-card px-8 py-3.5 text-base font-semibold text-secondary-foreground transition-colors hover:bg-secondary"
-            >
-              I already farm here
-            </a>
+            </SignInButton>
           </div>
 
           {/* Hero image — the mockup is a transparent portrait PNG, so it needs
