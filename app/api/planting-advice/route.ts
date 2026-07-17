@@ -21,15 +21,26 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    console.log(`[planting-advice] fetching BMKG forecast for adm4=${adm4}`);
     const forecast = await getWeatherForecast(adm4);
+
+    console.log(
+      `[planting-advice] fetching alerts for regions=${[
+        forecast.location.kotkab,
+        forecast.location.provinsi,
+      ].join(", ")}`
+    );
     const alerts = await getActiveWeatherAlerts(
       [forecast.location.kotkab, forecast.location.provinsi].filter(Boolean)
     );
+
+    console.log(`[planting-advice] calling Gemini for crop=${cropId}`);
     const advice = await getPlantingAdvice({ crop, forecast, alerts });
 
+    console.log("[planting-advice] success");
     return NextResponse.json({ forecast, alerts, advice });
   } catch (error) {
-    console.error("Planting advice generation failed", error);
+    console.error("[planting-advice] FAILED:", error);
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 502 });
   }

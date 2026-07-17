@@ -80,7 +80,7 @@ export default async function HomePage() {
       </main>
 
       <footer className="mx-auto max-w-6xl px-4 py-8 text-center text-xs text-muted-foreground md:px-6">
-        Agri-Gator aggregates BMKG, PIHPS Nasional, Bapanas &amp; Kementan Cybex into one place.
+        Agri-Gator aggregates all your farmer needs!
       </footer>
     </div>
   );

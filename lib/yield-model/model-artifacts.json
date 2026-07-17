@@ -1,0 +1,48 @@
+{
+  "scaler_mean": [
+    25.971558028288104,
+    1131.6276437773408,
+    457.9060135810892
+  ],
+  "scaler_scale": [
+    15.409118637081008,
+    701.794362057378,
+    233.90722239579975
+  ],
+  "scaler_cols": [
+    "pesticides_tonnes",
+    "average_rain_fall_mm_per_year",
+    "avg_temp"
+  ],
+  "pesticide_upper_whisker": 73.42772115122017,
+  "feature_columns": [
+    "Pesticides",
+    "Rainfall",
+    "Temperature",
+    "Year_Planted",
+    "Crop_Maize",
+    "Crop_Potatoes",
+    "Crop_Rice, paddy",
+    "Crop_Sorghum",
+    "Crop_Soybeans",
+    "Crop_Sweet potatoes",
+    "Crop_Wheat",
+    "Crop_Yams"
+  ],
+  "crop_categories": [
+    "Cassava",
+    "Maize",
+    "Potatoes",
+    "Rice, paddy",
+    "Sorghum",
+    "Soybeans",
+    "Sweet potatoes",
+    "Wheat",
+    "Yams"
+  ],
+  "metrics": {
+    "r2": 0.9259543118960751,
+    "rmse": 23105.07032838369,
+    "mae": 12186.291937451217
+  }
+}

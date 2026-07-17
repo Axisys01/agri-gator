@@ -1,5 +1,6 @@
 import { ScanLine } from "lucide-react";
 import { DashboardHeader } from "@/components/dashboard-header";
+import { PlantHealthScannerForm } from "@/components/plant-health-scanner-form";
 
 export default function PlantHealthScannerPage() {
   return (
@@ -14,12 +15,13 @@ export default function PlantHealthScannerPage() {
           Plant Health Scanner
         </h1>
         <p className="mt-2 max-w-md text-sm text-muted-foreground">
-          Photo-based pest &amp; disease detection via image classification. Part of the full
-          aggregator vision.
+          Photo-based pest &amp; disease detection via image classification, running right in
+          your browser.
         </p>
-        <span className="mt-6 rounded-full bg-accent/15 px-3 py-1 text-xs font-semibold text-accent">
-          Coming soon
-        </span>
+
+        <div className="mt-10 w-full">
+          <PlantHealthScannerForm />
+        </div>
       </main>
     </div>
   );

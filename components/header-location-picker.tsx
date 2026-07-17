@@ -23,7 +23,6 @@ export function HeaderLocationPicker({ initial }: { initial: LocationResult | nu
 
   useEffect(() => {
     if (query.trim().length < 2) {
-      setResults([]);
       return;
     }
 
@@ -113,7 +112,7 @@ export function HeaderLocationPicker({ initial }: { initial: LocationResult | nu
 
           {loading && <p className="mt-2 text-xs text-muted-foreground">Searching...</p>}
 
-          {results.length > 0 && (
+          {query.trim().length >= 2 && results.length > 0 && (
             <ul className="mt-2 max-h-64 overflow-auto">
               {results.map((result) => (
                 <li key={result.adm4}>

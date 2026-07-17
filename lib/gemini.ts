@@ -82,6 +82,9 @@ Based on this forecast, this crop's water needs, and any active warnings, advise
 Note the forecast only covers 3 days; be explicit when longer-term timing should
 also consider the regional wet/dry season pattern rather than the short-term forecast alone.`;
 
+  const model = process.env.GEMINI_MODEL || DEFAULT_MODEL;
+  console.log(`[gemini] requesting advice — model=${model} endpoint=${INTERACTIONS_URL}`);
+
   const res = await fetch(INTERACTIONS_URL, {
     method: "POST",
     headers: {
@@ -89,7 +92,7 @@ also consider the regional wet/dry season pattern rather than the short-term for
       "x-goog-api-key": apiKey,
     },
     body: JSON.stringify({
-      model: process.env.GEMINI_MODEL || DEFAULT_MODEL,
+      model,
       input: prompt,
       system_instruction:
         "Respond only with JSON matching the provided schema. Be concrete and practical; avoid hedging language a farmer can't act on.",
@@ -104,9 +107,17 @@ also consider the regional wet/dry season pattern rather than the short-term for
 
   if (!res.ok) {
     const errText = await res.text().catch(() => "");
+    if (res.status === 429) {
+      console.error(`[gemini] 429 RATE LIMITED (model=${model}):`, errText);
+      throw new Error(
+        `Gemini rate limit reached (429) for model "${model}". You've hit your quota — check usage at aistudio.google.com or wait for it to reset.`
+      );
+    }
+    console.error(`[gemini] request failed — status=${res.status} model=${model}:`, errText);
     throw new Error(`Gemini request failed: ${res.status} ${errText}`);
   }
 
+  console.log("[gemini] response OK, parsing output...");
   const json = await res.json();
   // `steps` can include non-output entries (e.g. `type: "thought"`) before the
   // actual `model_output` step, so find it rather than assuming steps[0].
