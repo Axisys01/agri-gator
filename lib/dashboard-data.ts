@@ -3,6 +3,8 @@ import {
   ScanLine,
   LineChart,
   Calculator,
+  Sprout,
+  Newspaper,
   type LucideIcon,
 } from "lucide-react"
 
@@ -113,6 +115,20 @@ export const features: Feature[] = [
     status: "live",
   },
   {
+    id: "crop-yield-prediction",
+    module: "Module 5",
+    name: "Crop Yield Prediction",
+    short: "Yield",
+    description:
+      "Estimates expected yield (hg/ha) from rainfall, pesticide use, planting year and crop type using a Random Forest model trained on historical FAO data.",
+    aggregates: "Yield modeling · Random Forest",
+    href: "/crop-yield-prediction",
+    icon: Sprout,
+    phase: "planning",
+    stage: "Before planting",
+    status: "live",
+  },
+  {
     id: "plant-health-scanner",
     module: "Module 2",
     name: "Plant Health Scanner",
@@ -125,5 +141,19 @@ export const features: Feature[] = [
     phase: "growing",
     stage: "During growing season",
     status: "soon",
+  },
+  {
+    id: "agriculture-news",
+    module: "Module 6",
+    name: "Agriculture News",
+    short: "News",
+    description:
+      "Aggregates the latest farming, crop, and agriculture policy news from multiple sources into one endless-scroll feed.",
+    aggregates: "News aggregation · NewsAPI",
+    href: "/agriculture-news",
+    icon: Newspaper,
+    phase: "planning",
+    stage: "Before planting",
+    status: "live",
   },
 ]
