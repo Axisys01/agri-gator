@@ -164,14 +164,20 @@ function PriceRow({
           className="flex min-w-0 flex-1 items-center gap-2.5 p-3 text-left"
         >
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5">
-              <h3 className="truncate font-serif text-sm font-semibold text-foreground">{commodity.name}</h3>
+            {/* The name owns its line. Sharing it with the badges squeezed the
+                truncation into the part that distinguishes these commodities —
+                "Beras Kualitas Super I" and "...Super II" both collapsed to
+                "Beras Kualitas S..." and read as duplicates. */}
+            <h3 className="truncate font-serif text-sm font-semibold text-foreground">
+              {commodity.name}
+            </h3>
+            <p className="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1 font-serif text-lg font-bold leading-none tracking-tight text-foreground">
+              {formatRupiah(commodity.currency, commodity.price)}
+              <span className="text-[11px] font-normal text-muted-foreground">
+                {commodity.unit}
+              </span>
               <ChangeBadge commodity={commodity} />
               {isNational && <NationalBadge />}
-            </div>
-            <p className="mt-0.5 font-serif text-lg font-bold leading-none tracking-tight text-foreground">
-              {formatRupiah(commodity.currency, commodity.price)}
-              <span className="ml-1 text-[11px] font-normal text-muted-foreground">{commodity.unit}</span>
             </p>
           </div>
 
