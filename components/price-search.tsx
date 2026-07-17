@@ -4,30 +4,51 @@ import { useState } from "react"
 import { Search } from "lucide-react"
 import { PriceCard } from "@/components/commodity-price-charts"
 import { searchCommodityPrices } from "@/lib/search-commodity-prices"
+import { PRICE_TYPES, type PriceTypeKey } from "@/lib/pihps"
 import { type CommodityTrend } from "@/lib/dashboard-data"
 
 type Status = "idle" | "loading" | "done"
 
-export function PriceSearch({ pinned }: { pinned: string[] }) {
+const PRICE_TYPE_TABS: { key: PriceTypeKey; label: string; hint: string }[] = [
+  { key: "produsen", label: "What I get", hint: "Produsen — the farm-gate price" },
+  { key: "tradisional", label: "What it sells for", hint: "Pasar Tradisional — the market price" },
+]
+
+export function PriceSearch({ pinned, province }: { pinned: string[]; province: string }) {
   const [query, setQuery] = useState("")
   const [searchedTerm, setSearchedTerm] = useState("")
   const [results, setResults] = useState<CommodityTrend[]>([])
   const [status, setStatus] = useState<Status>("idle")
+  const [priceType, setPriceType] = useState<PriceTypeKey>("produsen")
+  const [shownProvince, setShownProvince] = useState(province)
+  const [nationalFallbacks, setNationalFallbacks] = useState<string[]>([])
 
   // Seeds which hearts start filled. The buttons own their state after that, so
   // this doesn't need to track toggles made during the session.
   const pinnedSet = new Set(pinned)
 
+  async function search(term: string, type: PriceTypeKey) {
+    setStatus("loading")
+    setSearchedTerm(term)
+    const result = await searchCommodityPrices(term, { province, priceType: type })
+    setResults(result.commodities)
+    setShownProvince(result.province)
+    setNationalFallbacks(result.nationalFallbacks)
+    setStatus("done")
+  }
+
   async function runSearch(event: React.FormEvent) {
     event.preventDefault()
     const trimmed = query.trim()
     if (!trimmed) return
+    await search(trimmed, priceType)
+  }
 
-    setStatus("loading")
-    setSearchedTerm(trimmed)
-    const data = await searchCommodityPrices(trimmed)
-    setResults(data)
-    setStatus("done")
+  // Switching the tab should re-run the last search rather than silently leave
+  // the old price type's numbers on screen under the new label.
+  async function selectPriceType(key: PriceTypeKey) {
+    setPriceType(key)
+    if (searchedTerm) await search(searchedTerm, key)
   }
 
   return (
@@ -36,7 +57,35 @@ export function PriceSearch({ pinned }: { pinned: string[] }) {
         Search market prices
       </h1>
       <p className="mt-2 max-w-md text-center text-sm text-muted-foreground">
-        Look up national reference prices for any commodity in the Bapanas Panel Harga.
+        Look up any commodity tracked by PIHPS Nasional (Bank Indonesia) — what you&apos;d be
+        paid for it, and what it sells for at the pasar.
+      </p>
+
+      <div
+        role="tablist"
+        aria-label="Price type"
+        className="mt-5 inline-flex rounded-full border border-border bg-card p-1"
+      >
+        {PRICE_TYPE_TABS.map((tab) => (
+          <button
+            key={tab.key}
+            role="tab"
+            type="button"
+            aria-selected={priceType === tab.key}
+            title={tab.hint}
+            onClick={() => selectPriceType(tab.key)}
+            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              priceType === tab.key
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+      <p className="mt-2 text-xs text-muted-foreground">
+        {PRICE_TYPES[priceType]} · {shownProvince}
       </p>
 
       <form onSubmit={runSearch} className="mt-6 flex w-full max-w-md items-center justify-center gap-2">
@@ -46,7 +95,7 @@ export function PriceSearch({ pinned }: { pinned: string[] }) {
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search crops, prices, guides..."
+            placeholder="Search a commodity — beras, cabai, bawang…"
             className="w-full bg-transparent outline-none placeholder:text-muted-foreground"
             aria-label="Search commodity"
           />
@@ -84,6 +133,7 @@ export function PriceSearch({ pinned }: { pinned: string[] }) {
                 key={commodity.id}
                 commodity={commodity}
                 isPinned={pinnedSet.has(commodity.name)}
+                isNational={nationalFallbacks.includes(commodity.name)}
               />
             ))}
           </div>

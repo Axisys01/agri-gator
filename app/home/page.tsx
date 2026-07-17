@@ -6,6 +6,7 @@ import { WeatherAlertCard } from "@/components/weather-alert-card";
 import { getCommodityPrices } from "@/lib/get-commodity-prices";
 import { getUserCommodities } from "@/lib/user-commodities";
 import { getUserWeatherAlerts } from "@/lib/user-alerts";
+import { pihpsProvinceFor } from "@/lib/pihps";
 
 // The server clock is UTC on Vercel, which would greet a farmer opening the app
 // at 9am WIB with "Selamat malam". Pin it to Jakarta so the greeting matches
@@ -34,10 +35,12 @@ export default async function HomePage() {
   // Fetched once here rather than inside getCommodityPrices, since the charts
   // need the same list to decide which hearts render filled.
   const pinned = await getUserCommodities();
-  const commodities = await getCommodityPrices(pinned);
   // Same lookup the header's bell uses — getUserLocation is cache()d and the
   // BMKG feed is fetch-cached, so this costs nothing extra.
   const { location: alertLocation, alerts } = await getUserWeatherAlerts();
+  const board = await getCommodityPrices(pinned, {
+    province: pihpsProvinceFor(alertLocation?.provinsi),
+  });
 
   // Verified once in proxy.ts and forwarded via headers — see dashboard-header.tsx.
   const headerList = await headers();
@@ -65,7 +68,13 @@ export default async function HomePage() {
         <WeatherAlertCard location={alertLocation} alerts={alerts} />
 
         <div className="mt-8 flex flex-col gap-8">
-          <CommodityPriceCharts commodities={commodities} pinned={pinned} />
+          <CommodityPriceCharts
+            commodities={board.commodities}
+            pinned={pinned}
+            province={board.province}
+            priceTypeLabel={board.priceTypeLabel}
+            nationalFallbacks={board.nationalFallbacks}
+          />
           <FeatureGrid />
         </div>
       </main>

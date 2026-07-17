@@ -18,8 +18,8 @@ export type CommodityTrend = {
   history: { label: string; value: number }[]
 }
 
-// Category-header rows from the Bapanas Panel Harga Pangan table (the "No"
-// column is a Roman numeral for these, an Arabic number for sub-variants).
+// Category-header rows from the PIHPS Nasional pasar tradisional table (the
+// "No" column is a Roman numeral for these, an Arabic number for sub-variants).
 export const FEATURED_COMMODITIES = ["Beras", "Cabai Merah", "Bawang Merah"]
 
 export const MAX_SEARCH_RESULTS = 12
@@ -31,9 +31,36 @@ export const MAX_DASHBOARD_COMMODITIES = 6
 
 export type PriceRow = { commodity: string; date: string; price: number }
 
+// Number of points in a sparkline — one per week, so the card's "last 10 weeks"
+// is literally true.
+const TREND_POINTS = 10
+
+/**
+ * PIHPS reports daily, and these prices barely move day to day — beras sat at
+ * exactly Rp 14,200 for twelve consecutive days in Jawa Tengah. Ten daily
+ * points would draw a flat line and a permanent 0% change, so bucket to one
+ * point per week and keep the newest reading in each.
+ */
+function toWeekly(rows: PriceRow[]): PriceRow[] {
+  const byWeek = new Map<number, PriceRow>()
+
+  for (const row of rows) {
+    const timestamp = Date.parse(row.date)
+    if (Number.isNaN(timestamp)) continue
+    const week = Math.floor(timestamp / (7 * 24 * 60 * 60 * 1000))
+    // Rows arrive date-ascending, so the last write per bucket is that week's
+    // most recent price.
+    byWeek.set(week, row)
+  }
+
+  return [...byWeek.entries()].sort(([a], [b]) => a - b).map(([, row]) => row)
+}
+
 export function groupIntoTrends(rows: PriceRow[], names: string[]): CommodityTrend[] {
   return names.map((name) => {
-    const commodityRows = rows.filter((row) => row.commodity === name).slice(-10)
+    const commodityRows = toWeekly(rows.filter((row) => row.commodity === name)).slice(
+      -TREND_POINTS,
+    )
     const history = commodityRows.map((row) => ({ label: row.date, value: row.price }))
     const latest = commodityRows.at(-1)
     const windowStart = commodityRows[0]
@@ -49,7 +76,7 @@ export function groupIntoTrends(rows: PriceRow[], names: string[]): CommodityTre
       price: latest?.price ?? 0,
       currency: "Rp",
       changePct: Math.round(changePct * 10) / 10,
-      source: "Bapanas Panel Harga",
+      source: "PIHPS Nasional (Bank Indonesia)",
       history,
     }
   })
@@ -90,8 +117,8 @@ export const features: Feature[] = [
     name: "Market Price Board",
     short: "Prices",
     description:
-      "Live fair-market commodity prices pulled from PIHPS Nasional and Bapanas so you never sell blind to middlemen.",
-    aggregates: "Pricing data · PIHPS / Bapanas",
+      "Search national average traditional-market prices from PIHPS Nasional, see the last 10 weeks of movement, and pin the commodities you grow to your dashboard.",
+    aggregates: "Pricing data · PIHPS Nasional",
     href: "/prices",
     icon: LineChart,
     phase: "planning",

@@ -64,6 +64,22 @@ function Sparkline({ commodity, showTooltip }: { commodity: CommodityTrend; show
   )
 }
 
+/**
+ * A province only reports what it grows, so a commodity can legitimately have no
+ * local price. Marking those keeps a national average from passing itself off as
+ * the price down the road.
+ */
+function NationalBadge() {
+  return (
+    <span
+      title="No local price for this commodity — showing the national average"
+      className="rounded-full bg-secondary px-1.5 py-0.5 text-[10px] font-semibold text-secondary-foreground"
+    >
+      Nasional
+    </span>
+  )
+}
+
 function ChangeBadge({ commodity }: { commodity: CommodityTrend }) {
   const isUp = commodity.changePct >= 0
   return (
@@ -83,10 +99,13 @@ function ChangeBadge({ commodity }: { commodity: CommodityTrend }) {
 export function PriceCard({
   commodity,
   isPinned,
+  isNational,
 }: {
   commodity: CommodityTrend
   /* Omitted where there's no signed-in user to pin for — the heart is hidden. */
   isPinned?: boolean
+  /* No local figure for this one, so it's the national average instead. */
+  isNational?: boolean
 }) {
   return (
     <article className="flex flex-col rounded-2xl border border-border bg-card p-5 shadow-sm">
@@ -95,7 +114,10 @@ export function PriceCard({
           <h3 className="font-serif text-sm font-semibold leading-tight text-foreground text-balance">
             {commodity.name}
           </h3>
-          <p className="mt-0.5 text-xs text-muted-foreground">{commodity.unit}</p>
+          <p className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+            {commodity.unit}
+            {isNational && <NationalBadge />}
+          </p>
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
           <ChangeBadge commodity={commodity} />
@@ -119,7 +141,15 @@ export function PriceCard({
 }
 
 /* Mobile compact, expandable row */
-function PriceRow({ commodity, isPinned }: { commodity: CommodityTrend; isPinned?: boolean }) {
+function PriceRow({
+  commodity,
+  isPinned,
+  isNational,
+}: {
+  commodity: CommodityTrend
+  isPinned?: boolean
+  isNational?: boolean
+}) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -137,6 +167,7 @@ function PriceRow({ commodity, isPinned }: { commodity: CommodityTrend; isPinned
             <div className="flex items-center gap-1.5">
               <h3 className="truncate font-serif text-sm font-semibold text-foreground">{commodity.name}</h3>
               <ChangeBadge commodity={commodity} />
+              {isNational && <NationalBadge />}
             </div>
             <p className="mt-0.5 font-serif text-lg font-bold leading-none tracking-tight text-foreground">
               {formatRupiah(commodity.currency, commodity.price)}
@@ -175,11 +206,18 @@ function PriceRow({ commodity, isPinned }: { commodity: CommodityTrend; isPinned
 export function CommodityPriceCharts({
   commodities,
   pinned,
+  province,
+  priceTypeLabel,
+  nationalFallbacks,
 }: {
   commodities: CommodityTrend[]
   pinned: string[]
+  province: string
+  priceTypeLabel: string
+  nationalFallbacks: string[]
 }) {
   const pinnedSet = new Set(pinned)
+  const nationalSet = new Set(nationalFallbacks)
   // Nothing pinned yet means these are the stock defaults, not the farmer's
   // pick — say so, otherwise the list silently changing on the first heart
   // looks like a bug.
@@ -192,11 +230,17 @@ export function CommodityPriceCharts({
           <h2 id="prices-heading" className="font-serif text-lg font-bold text-foreground">
             Market Prices
           </h2>
-          <p className="hidden text-sm text-muted-foreground sm:block">
-            {showingDefaults
-              ? "Default picks · tap a heart to pin your own"
-              : "Last 10 weeks · national reference prices"}
+          {/* Which province and price type these are is load-bearing: a national
+              fallback looks identical to local data otherwise, and Produsen and
+              Pasar Tradisional are different numbers for the same commodity. */}
+          <p className="text-sm text-muted-foreground">
+            {priceTypeLabel} · {province}
           </p>
+          {showingDefaults && (
+            <p className="hidden text-sm text-muted-foreground sm:block">
+              Default picks · tap a heart to pin your own
+            </p>
+          )}
         </div>
         <Link href="/prices" className="text-sm font-semibold text-primary hover:underline">
           View all
@@ -206,14 +250,24 @@ export function CommodityPriceCharts({
       {/* Mobile: compact expandable rows */}
       <div className="flex flex-col gap-3 sm:hidden">
         {commodities.map((commodity) => (
-          <PriceRow key={commodity.id} commodity={commodity} isPinned={pinnedSet.has(commodity.name)} />
+          <PriceRow
+            key={commodity.id}
+            commodity={commodity}
+            isPinned={pinnedSet.has(commodity.name)}
+            isNational={nationalSet.has(commodity.name)}
+          />
         ))}
       </div>
 
       {/* Tablet / desktop: full cards */}
       <div className="hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3">
         {commodities.map((commodity) => (
-          <PriceCard key={commodity.id} commodity={commodity} isPinned={pinnedSet.has(commodity.name)} />
+          <PriceCard
+            key={commodity.id}
+            commodity={commodity}
+            isPinned={pinnedSet.has(commodity.name)}
+            isNational={nationalSet.has(commodity.name)}
+          />
         ))}
       </div>
     </section>
