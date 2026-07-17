@@ -20,11 +20,15 @@ export function RotatingWord({
   }, [words.length, intervalMs]);
 
   // Stack every word in the same grid cell so the box sizes to the longest word
-  // and the surrounding text never reflows as words swap. justify-items-center
-  // then centres each word in that fixed box — without it, shorter words sit
-  // flush left and their trailing space visibly pulls the line off-centre.
+  // and the surrounding text never reflows as words swap.
+  //
+  // justify-items-start anchors every word to the same spot right after "your",
+  // so it reads as a sentence rather than a word drifting inside a slot. The
+  // cost is that shorter words leave trailing space inside the fixed-width box,
+  // which pulls the visible line slightly left of true centre — accepted
+  // deliberately: a stable starting point beats a stable centre here.
   return (
-    <span className="relative inline-grid justify-items-center text-primary">
+    <span className="relative inline-grid justify-items-start text-primary">
       {words.map((word, i) => (
         <span
           key={word}
