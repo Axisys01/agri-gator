@@ -26,7 +26,9 @@ export function WeatherAlertCard({
     );
   }
 
-  // BMKG usually has nothing for a village; saying so plainly beats inventing a warning that trains farmers to ignore the banner.
+  // Most of the time BMKG has nothing for a given village, and saying so plainly
+  // beats inventing a warning — a farmer who learns the banner cries wolf will
+  // ignore the one that matters.
   if (alerts.length === 0) {
     return (
       <div className="mt-5 flex items-start gap-3 rounded-2xl border border-border bg-card p-4">

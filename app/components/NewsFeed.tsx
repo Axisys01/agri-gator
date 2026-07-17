@@ -10,9 +10,9 @@ function formatDate(iso: string) {
 }
 
 function NewsCard({ article }: { article: NewsArticle }) {
-  // The NEWS_API_KEY plan redacts URLs/images/source domain (see lib/news.ts),
-  // so those fields are null and this renders as a non-clickable card instead
-  // of a dead link.
+  // The current NEWS_API_KEY's plan redacts article URLs/images/source domain
+  // (see lib/news.ts) — those come through as null, so this renders as a
+  // plain non-clickable card instead of a link to nowhere.
   const Wrapper = article.url ? "a" : "div";
 
   return (

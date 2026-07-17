@@ -10,8 +10,8 @@
  *   npx tsx scripts/import-prices.mts             # fetch + upsert
  *   npx tsx scripts/import-prices.mts --days=180  # longer backfill
  *
- * Needs SUPABASE_SERVICE_ROLE_KEY: RLS blocks anon writes, and it must stay server-side
- * since it bypasses RLS entirely. Never expose it to the browser.
+ * Needs SUPABASE_SERVICE_ROLE_KEY: RLS blocks anon writes, and it must stay
+ * server-side — it bypasses RLS entirely. Never expose it to the browser.
  */
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
@@ -25,7 +25,7 @@ const PRICE_TYPES = [
 ] as const;
 
 const DEFAULT_DAYS = 90;
-// Sequential with a pause: this is a government service doing us a favour.
+// Sequential with a pause — this is a government service doing us a favour.
 const DELAY_MS = 400;
 // ~70 calls in a row over a phone hotspot will drop connections and PIHPS
 // pushes back if pressed; without retries a single blip silently loses a whole
@@ -44,10 +44,10 @@ interface GridRow {
   [dateOrField: string]: unknown;
 }
 
-// A type alias, not an interface: GenericTable wants Row/Insert to satisfy Record<string,
-// unknown>, but interfaces have no implicit index signature, so an interface here fails the
-// constraint and collapses every insert to `never` with an error that points at the call site
-// instead of the cause.
+// A type alias, not an interface: GenericTable wants Row/Insert to satisfy
+// Record<string, unknown>, and interfaces have no implicit index signature —
+// so an interface here fails the constraint and collapses every insert to
+// `never` with a error that points at the call site instead of the cause.
 type PriceRow = {
   commodity: string;
   date: string;
@@ -152,9 +152,9 @@ async function fetchGrid(
 }
 
 /**
- * The grid comes back wide: each row is a commodity and every date is its own key
- * ("01/07/2026": "14,200"), so it has to be unpivoted into one row per commodity/date
- * to match the table.
+ * The grid comes back wide — each row is a commodity and every date is its own
+ * key ("01/07/2026": "14,200") — so it has to be unpivoted into one row per
+ * commodity/date to match the table.
  */
 function toPriceRows(grid: GridRow[], province: string, priceType: string): PriceRow[] {
   const rows: PriceRow[] = [];
@@ -167,7 +167,7 @@ function toPriceRows(grid: GridRow[], province: string, priceType: string): Pric
       if (!date) continue; // no/name/level and anything else non-date
 
       const price = parsePrice(value);
-      if (price === null) continue; // unreported day, skip rather than store a 0
+      if (price === null) continue; // unreported day — skip rather than store a 0
 
       rows.push({ commodity: row.name.trim(), date, price, province, price_type: priceType });
     }
@@ -205,8 +205,8 @@ async function main() {
 
   const { data: provinceRefs } = await getJson<{ data: ProvinceRef[] }>("GetRefProvince");
 
-  // province_id="" is every province at once: the national average, and the sensible
-  // default for a user who hasn't set a location.
+  // province_id="" is every province at once — the national average, and the
+  // sensible default for a user who hasn't set a location.
   const targets: ProvinceRef[] = [{ id: "", name: "Nasional" }, ...provinceRefs];
 
   console.log(

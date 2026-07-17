@@ -11,7 +11,7 @@ import {
 
 export interface PriceBoard {
   commodities: CommodityTrend[]
-  /** The province asked for. Individual commodities may still be national. */
+  /** The province asked for — individual commodities may still be national. */
   province: string
   priceTypeLabel: string
   /** Commodities with no local figure, shown at the national average instead. */
@@ -27,8 +27,9 @@ async function fetchRows(
   const { data, error } = await supabase
     .from("commodity_prices")
     .select("commodity, date, price")
-    // Without both filters, every commodity carries a row per province per price type per date,
-    // and groupIntoTrends would blend Aceh, Papua, and the national average into one line.
+    // Without both filters every commodity carries a row per province per price
+    // type for each date, and groupIntoTrends would blend Aceh, Papua and the
+    // national average into one meaningless line.
     .eq("province", province)
     .eq("price_type", priceType)
     .in("commodity", names)
@@ -54,9 +55,13 @@ export async function getCommodityPrices(
   let rows = await fetchRows(names, requested, priceTypeLabel)
   let nationalFallbacks: string[] = []
 
-  // Falls back per commodity, not all-or-nothing: a province may grow some pinned
-  // commodities but not others (e.g. no shallot in Kalimantan Tengah), and an
-  // uncovered one would otherwise render as Rp 0 instead of falling back.
+  // A province only reports what it actually grows: Kalimantan Tengah has no
+  // shallot farms, so Bawang Merah has no producer price there at all.
+  //
+  // This has to be per commodity, not all-or-nothing. Checking rows.length === 0
+  // never fires when *some* of the pinned commodities have local data — the
+  // uncovered ones just fall through to `latest?.price ?? 0` and render as
+  // Rp 0, which reads as "worthless" rather than "not grown here".
   if (requested !== NATIONAL_PROVINCE) {
     const covered = new Set(rows.map((row) => row.commodity))
     const missing = names.filter((name) => !covered.has(name))

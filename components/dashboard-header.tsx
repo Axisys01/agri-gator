@@ -8,13 +8,17 @@ import { getUserLocation } from "@/lib/user-location";
 import { getUserWeatherAlerts } from "@/lib/user-alerts";
 
 export async function DashboardHeader() {
-  // proxy.ts already verified the session and forwards it via headers, avoiding a second round trip to Supabase's Auth server.
+  // The session was already verified once in proxy.ts (which must run on
+  // every request to refresh the auth cookie) — it forwards the result here
+  // via headers so we don't pay for a second round trip to Supabase's Auth
+  // server just to render sign-in state.
   const headerList = await headers();
   const userEmail = headerList.get("x-supabase-user-email");
   const userName = headerList.get("x-supabase-user-name");
   const userLabel = userName || userEmail;
   const location = userLabel ? await getUserLocation() : null;
-  // Signed-out visitors have no location, so skip the BMKG lookup rather than fetch and discard it.
+  // Signed-out visitors have no location, so there's nothing to warn about —
+  // skip the BMKG lookup entirely rather than fetch and discard.
   const { alerts } = userLabel ? await getUserWeatherAlerts() : { alerts: [] };
 
   return (
@@ -32,17 +36,21 @@ export async function DashboardHeader() {
           </span>
         </a>
 
-        {/* Every module route is auth-gated; a signed-out search would only bounce back to the landing page. */}
+        {/* Every module route is auth-gated, so a signed-out search would only
+            ever bounce you back to the landing page. */}
         {userLabel && <FeatureSearch />}
 
-        {/* Search carries the ml-auto that pushes this group right, but only shows at md+ when signed in, so this group keeps its own margin when search isn't there to provide it. */}
+        {/* The search bar carries the ml-auto that pushes this group right, but
+            only exists at md+ and only once signed in — so the group keeps its
+            own margin whenever the search isn't there to provide it. */}
         <div
           className={`ml-auto flex items-center gap-2 ${userLabel ? "md:ml-0" : ""}`}
         >
-          {/* Only signed-in users get the picker: the choice is saved per account. */}
+          {/* Only signed-in users get the picker — the choice is saved per account. */}
           {userLabel && <HeaderLocationPicker initial={location} />}
 
-          {/* Nothing to notify a signed-out visitor about: warnings are tied to the village saved on the account. */}
+          {/* Nothing to notify a signed-out visitor about — warnings are tied
+              to the village saved on the account. */}
           {userLabel && <NotificationBell alerts={alerts} placeName={location?.desa} />}
 
           {userLabel ? <UserMenu label={userLabel} /> : <SignInButton />}

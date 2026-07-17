@@ -90,7 +90,7 @@ export function FeatureGrid() {
             Your farming toolkit
           </h2>
           <p className="hidden text-sm text-muted-foreground sm:block">
-            One app across the whole season: before planting, deciding when to
+            One app across the whole season — before planting, deciding when to
             plant, and during growth.
           </p>
         </div>

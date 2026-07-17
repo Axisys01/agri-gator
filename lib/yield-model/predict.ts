@@ -20,8 +20,11 @@ export interface CropOption {
   label: string;
 }
 
-// The training dataset's crop coverage only partially overlaps lib/crops.ts (chili, shallot,
-// and tomato aren't in it), so this feature keeps its own crop list instead of reusing that one.
+// The dataset's crop coverage (global FAO staples) only partially overlaps
+// Agri-Gator's crop list (lib/crops.ts) — Padi/Jagung/Kedelai map onto
+// Rice/Maize/Soybeans, the rest (chili, shallot, tomato) aren't in the
+// training data, so this feature has its own crop list rather than reusing
+// lib/crops.ts.
 const CROP_LABELS: Record<string, string> = {
   Cassava: "Cassava",
   Maize: "Maize (Jagung)",

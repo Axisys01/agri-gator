@@ -8,8 +8,13 @@ import { getUserCommodities } from "@/lib/user-commodities";
 import { getUserWeatherAlerts } from "@/lib/user-alerts";
 import { pihpsProvinceFor } from "@/lib/pihps";
 
-// Pinned to Jakarta time so the greeting matches the farmer's day, not UTC's.
-// Indonesian day boundaries (siang/sore) sit earlier than English morning/afternoon/evening.
+// The server clock is UTC on Vercel, which would greet a farmer opening the app
+// at 9am WIB with "Selamat malam". Pin it to Jakarta so the greeting matches
+// the user's day rather than the datacentre's.
+//
+// These are Indonesian day boundaries, not the English ones translated: siang
+// is the middle of the day and sore is late afternoon, so the cutoffs sit
+// earlier than morning/afternoon/evening would.
 function greetingFor(now: Date) {
   const hour = Number(
     new Intl.DateTimeFormat("en-US", {
@@ -27,27 +32,31 @@ function greetingFor(now: Date) {
 }
 
 export default async function HomePage() {
-  // Fetched here, not inside getCommodityPrices, since the charts also need this list to render filled hearts.
+  // Fetched once here rather than inside getCommodityPrices, since the charts
+  // need the same list to decide which hearts render filled.
   const pinned = await getUserCommodities();
-  // Same lookup as the header's bell; getUserLocation is cache()d and the BMKG feed is fetch-cached, so this is free.
+  // Same lookup the header's bell uses — getUserLocation is cache()d and the
+  // BMKG feed is fetch-cached, so this costs nothing extra.
   const { location: alertLocation, alerts } = await getUserWeatherAlerts();
   const board = await getCommodityPrices(pinned, {
     province: pihpsProvinceFor(alertLocation?.provinsi),
   });
 
-  // Verified once in proxy.ts and forwarded via headers. See dashboard-header.tsx.
+  // Verified once in proxy.ts and forwarded via headers — see dashboard-header.tsx.
   const headerList = await headers();
   const userEmail = headerList.get("x-supabase-user-email");
   const userName = headerList.get("x-supabase-user-name");
 
-  // Google returns a full name, but the heading uses just the first, falling
-  // back to the email's local part rather than rendering a full address at h1 size.
+  // Google hands back a full name, but a heading reads better with just the
+  // first — and falls back to the email's local part rather than rendering a
+  // whole address at h1 size.
   const firstName = userName?.split(" ")[0] || userEmail?.split("@")[0];
   const greeting = greetingFor(new Date());
 
   return (
-    // relative is load-bearing: without it, the hairlines' inset-0 resolves against
-    // the viewport and stops after one screen instead of the full scroll height.
+    // relative is load-bearing: without a positioned ancestor the hairlines
+    // below resolve inset-0 against the viewport and stop after one screen
+    // rather than running the full scrollable height.
     <div className="relative min-h-screen bg-background">
       <div
         className="pointer-events-none absolute inset-0 z-0 mx-auto max-w-6xl border-x border-border"
@@ -62,6 +71,7 @@ export default async function HomePage() {
           </h1>
         </div>
 
+        {/* BMKG nowcast / extreme weather alert (Module 1) */}
         <WeatherAlertCard location={alertLocation} alerts={alerts} />
 
         <div className="mt-8 flex flex-col gap-8">

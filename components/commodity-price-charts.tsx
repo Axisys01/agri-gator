@@ -86,11 +86,15 @@ function Sparkline({
   );
 }
 
-// Provinces don't report every commodity; this badge flags a national average so it isn't mistaken for a local price.
+/**
+ * A province only reports what it grows, so a commodity can legitimately have no
+ * local price. Marking those keeps a national average from passing itself off as
+ * the price down the road.
+ */
 function NationalBadge() {
   return (
     <span
-      title="No local price for this commodity: showing the national average"
+      title="No local price for this commodity — showing the national average"
       className="rounded-full bg-secondary px-1.5 py-0.5 text-[10px] font-semibold text-secondary-foreground"
     >
       Nasional
@@ -126,7 +130,7 @@ export function PriceCard({
   isNational,
 }: {
   commodity: CommodityTrend;
-  /* Omitted where there's no signed-in user to pin for, the heart is hidden. */
+  /* Omitted where there's no signed-in user to pin for — the heart is hidden. */
   isPinned?: boolean;
   /* No local figure for this one, so it's the national average instead. */
   isNational?: boolean;
@@ -183,7 +187,8 @@ function PriceRow({
 
   return (
     <div className="rounded-2xl border border-border bg-card shadow-sm">
-      {/* The heart sits beside the expand button, not inside it: nesting a button in a button is invalid and breaks keyboard navigation. */}
+      {/* The heart sits beside the expand button rather than inside it — nesting
+          one button in another is invalid and breaks keyboard navigation. */}
       <div className="flex items-center gap-1 pr-2">
         <button
           type="button"
@@ -192,7 +197,10 @@ function PriceRow({
           className="flex min-w-0 flex-1 items-center gap-2.5 p-3 text-left"
         >
           <div className="min-w-0 flex-1">
-            {/* Name gets its own line: sharing it with badges truncated the distinguishing part, so "Beras Kualitas Super I" and "...Super II" both collapsed to "Beras Kualitas S..." and read as duplicates. */}
+            {/* The name owns its line. Sharing it with the badges squeezed the
+                truncation into the part that distinguishes these commodities —
+                "Beras Kualitas Super I" and "...Super II" both collapsed to
+                "Beras Kualitas S..." and read as duplicates. */}
             <h3 className="truncate font-serif text-sm font-semibold text-foreground">
               {commodity.name}
             </h3>
@@ -206,6 +214,7 @@ function PriceRow({
             </p>
           </div>
 
+          {/* small graph preview on the right */}
           <div className="h-10 w-16 shrink-0">
             <Sparkline commodity={commodity} />
           </div>
@@ -253,7 +262,9 @@ export function CommodityPriceCharts({
 }) {
   const pinnedSet = new Set(pinned);
   const nationalSet = new Set(nationalFallbacks);
-  // No pins yet means these are stock defaults, not the farmer's picks: say so, or the list quietly changing on the first heart will look like a bug.
+  // Nothing pinned yet means these are the stock defaults, not the farmer's
+  // pick — say so, otherwise the list silently changing on the first heart
+  // looks like a bug.
   const showingDefaults = pinned.length === 0;
 
   return (
@@ -266,7 +277,9 @@ export function CommodityPriceCharts({
           >
             Market Prices
           </h2>
-          {/* Province and price type are load-bearing: a national fallback looks identical to local data, and Produsen vs Pasar Tradisional differ for the same commodity. */}
+          {/* Which province and price type these are is load-bearing: a national
+              fallback looks identical to local data otherwise, and Produsen and
+              Pasar Tradisional are different numbers for the same commodity. */}
           <p className="text-sm text-muted-foreground">
             {priceTypeLabel} · {province}
           </p>

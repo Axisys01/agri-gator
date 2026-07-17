@@ -36,11 +36,11 @@ export default function WeatherWidget({ forecast }: { forecast: WeatherForecast 
               <img src={entry.iconUrl} alt={entry.weatherDesc} className="my-1 h-8 w-8" />
             )}
             <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-              {entry.tempC !== null ? `${Math.round(entry.tempC)}°C` : "N/A"}
+              {entry.tempC !== null ? `${Math.round(entry.tempC)}°C` : "—"}
             </span>
             <span className="text-[11px] text-zinc-500">{entry.weatherDesc}</span>
             <span className="text-[11px] text-zinc-400">
-              💧{entry.humidityPct ?? "N/A"}%
+              💧{entry.humidityPct ?? "—"}%
             </span>
           </div>
         ))}

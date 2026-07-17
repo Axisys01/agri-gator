@@ -4,7 +4,9 @@ import { useState } from "react";
 import { Info, Map as MapIcon } from "lucide-react";
 import { PlotAreaMap } from "@/components/plot-area-map";
 
-// Smallholders measure in local units more often than hectares: a tumbak (aka bata/ru) is ~14 m², and mixing units up is a 100x error, so every unit farmers actually use gets an explicit conversion.
+// Smallholders measure plots in local units far more often than in hectares —
+// a tumbak (also called bata or ru) is ~14 m². Mixing these up is a 100x error,
+// so every unit the farmer might actually use gets an explicit conversion.
 const AREA_UNITS = {
   ha: { label: "Hektar", toHa: 1 },
   are: { label: "Are (100 m²)", toHa: 0.01 },
@@ -14,7 +16,13 @@ const AREA_UNITS = {
 
 type AreaUnit = keyof typeof AREA_UNITS;
 
-// Pesticide labels are volume (EC/SL) or weight (WP/SP/WG); the answer must match that unit or a tank gets mixed wrong. Indonesian labels print "cc", not "ml", hence the wording.
+// Pesticides ship as liquids (EC, SL) and as solids (WP, SP, WG), so the label
+// figure is either volume or weight — and the answer has to come back in the
+// same one. Telling someone to measure a wettable powder in millilitres is how
+// a tank gets mixed wrong.
+//
+// Indonesian labels overwhelmingly print "cc" rather than "ml"; identical
+// units, but cc is the word actually on the bottle in the farmer's hand.
 const PRODUCT_UNITS = {
   ml: { label: "ml / cc per litre", short: "ml", bulk: "L" },
   g: { label: "gram per litre", short: "g", bulk: "kg" },
@@ -22,7 +30,7 @@ const PRODUCT_UNITS = {
 
 type ProductUnit = keyof typeof PRODUCT_UNITS;
 
-// Volume semprot: the spray volumes per hectare normally recommended.
+// Volume semprot — the spray volumes per hectare normally recommended.
 const SPRAY_VOLUMES = [300, 400, 500];
 
 // Knapsack sprayer sizes farmers actually carry.
@@ -49,7 +57,9 @@ export function PesticideCalculator() {
     Number.isFinite(concentrationValue) &&
     concentrationValue > 0;
 
-  // dosis = konsentrasi x volume semprot: product needed is concentration applied across the whole spray volume, unit-agnostic in and out.
+  // dosis = konsentrasi x volume semprot, so the product needed for the plot is
+  // just the concentration applied across the whole spray volume. These are
+  // unit-agnostic: whatever the label is measured in, the answer comes back in.
   const areaHa = areaValue * AREA_UNITS[unit].toHa;
   const totalSprayL = areaHa * sprayVolume;
   const tanks = totalSprayL / tankSize;
@@ -70,7 +80,8 @@ export function PesticideCalculator() {
               <label htmlFor="area" className="block text-sm font-medium text-foreground">
                 Land area
               </label>
-              {/* Area is the most-guessed input and every number below is a multiple of it, so measuring it beats estimating. */}
+              {/* Area is this calculator's most-guessed input, and every number
+                  below is a multiple of it — so measuring it beats estimating. */}
               <button
                 type="button"
                 onClick={() => setMapOpen((value) => !value)}
@@ -86,7 +97,9 @@ export function PesticideCalculator() {
               <div className="mb-3">
                 <PlotAreaMap
                   onApply={(hectares) => {
-                    // Round-trips as hectares (what the map measures); converting to the farmer's chosen unit would just add a second rounding for no benefit.
+                    // Round-trips as hectares, which is what the map measures —
+                    // converting into the farmer's chosen unit would introduce
+                    // a second rounding for no benefit.
                     setArea(String(Number(hectares.toFixed(4))));
                     setUnit("ha");
                     setMapOpen(false);
@@ -265,7 +278,7 @@ export function PesticideCalculator() {
       <p className="mt-4 flex items-start justify-center gap-2 text-center text-xs text-muted-foreground">
         <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
         <span>
-          Always follow the concentration on your product&apos;s label, since it varies by product
+          Always follow the concentration on your product&apos;s label — it varies by product
           and pest. This calculator only converts that figure to your plot and sprayer.
         </span>
       </p>

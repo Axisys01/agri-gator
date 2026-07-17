@@ -26,17 +26,20 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  // Refreshes the session cookie if expired; Server Components can read cookies but not write
-  // them. This is the only place that should call getUser(), forwarded to Server Components
-  // via headers below so they don't re-verify it.
+  // Refreshes the session cookie if it's expired. Required because Server
+  // Components can read cookies but can't write them. This is also the only
+  // place that should ever call getUser() — it's forwarded to Server
+  // Components via headers below so they don't need to verify it again.
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
 
-  // Attaches cookies Supabase rotated during getUser() to every response we return, including
-  // redirects, or the refreshed session never reaches the browser and causes intermittent
+  // Attach any cookies Supabase rotated during getUser() to the outgoing
+  // response. Must run on *every* response we return — including redirects —
+  // or a session refreshed on this request never reaches the browser, which
+  // leaves it holding an already-used refresh token and causes intermittent
   // "randomly logged out" failures.
   const withRefreshedCookies = (response: NextResponse) => {
     refreshedCookies.forEach(({ name, value, options }) =>
@@ -62,7 +65,8 @@ export async function updateSession(request: NextRequest) {
     );
   }
 
-  // Clone + overwrite, never trust-passthrough, so a client can't spoof these by sending them on the original request.
+  // Clone + overwrite (never trust-passthrough) so a client can't spoof
+  // these by sending them on the original request.
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-supabase-user-email", user?.email ?? "");
   requestHeaders.set("x-supabase-user-name", user?.user_metadata?.name ?? "");

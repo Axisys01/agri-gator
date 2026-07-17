@@ -16,25 +16,33 @@ export type CommodityTrend = {
   currency: string;
   changePct: number;
   source: string;
+  // last ~10 data points for the sparkline
   history: { label: string; value: number }[];
 };
 
-// Category-header rows in the PIHPS Nasional pasar tradisional table: the "No" column is a
-// Roman numeral for these, an Arabic number for sub-variants.
+// Category-header rows from the PIHPS Nasional pasar tradisional table (the
+// "No" column is a Roman numeral for these, an Arabic number for sub-variants).
 export const FEATURED_COMMODITIES = ["Beras", "Cabai Merah", "Bawang Merah"];
 
 export const MAX_SEARCH_RESULTS = 12;
 
-// The dashboard grid tops out at 3 across; past a couple of rows the prices section crowds out
-// everything below it, and "View all" already covers the rest.
+// The dashboard grid tops out at 3 across; past a couple of rows the prices
+// section crowds out everything below it, and "View all" already covers the
+// rest.
 export const MAX_DASHBOARD_COMMODITIES = 6;
 
 export type PriceRow = { commodity: string; date: string; price: number };
 
-// One sparkline point per week, so the card's "last 10 weeks" claim is literally true.
+// Number of points in a sparkline — one per week, so the card's "last 10 weeks"
+// is literally true.
 const TREND_POINTS = 10;
 
-/** PIHPS prices barely move day to day (beras held exactly Rp 14,200 for 12 straight days in Jawa Tengah), so bucket to one point per week and keep the newest reading in each. */
+/**
+ * PIHPS reports daily, and these prices barely move day to day — beras sat at
+ * exactly Rp 14,200 for twelve consecutive days in Jawa Tengah. Ten daily
+ * points would draw a flat line and a permanent 0% change, so bucket to one
+ * point per week and keep the newest reading in each.
+ */
 function toWeekly(rows: PriceRow[]): PriceRow[] {
   const byWeek = new Map<number, PriceRow>();
 
@@ -42,7 +50,8 @@ function toWeekly(rows: PriceRow[]): PriceRow[] {
     const timestamp = Date.parse(row.date);
     if (Number.isNaN(timestamp)) continue;
     const week = Math.floor(timestamp / (7 * 24 * 60 * 60 * 1000));
-    // Rows arrive date-ascending, so the last write per bucket is that week's most recent price.
+    // Rows arrive date-ascending, so the last write per bucket is that week's
+    // most recent price.
     byWeek.set(week, row);
   }
 

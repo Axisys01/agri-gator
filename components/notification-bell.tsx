@@ -47,7 +47,8 @@ export function NotificationBell({
         className="relative flex size-10 shrink-0 items-center justify-center rounded-full border border-border bg-card text-secondary-foreground transition-colors hover:bg-secondary"
       >
         <Bell className="size-5" aria-hidden="true" />
-        {/* Only shown when BMKG has something; a dot that's always lit is just noise the farmer learns to ignore. */}
+        {/* Only ever shown when BMKG actually has something — a dot that's
+            always lit is just noise the farmer learns to ignore. */}
         {alerts.length > 0 && (
           <span
             className="absolute right-2 top-2 size-2 rounded-full bg-accent"
@@ -57,7 +58,8 @@ export function NotificationBell({
       </button>
 
       {open && (
-        // Anchoring to the button would overflow the left edge on a phone, so use a full-width sheet under the header below sm.
+        // Anchoring to the button would overflow the left edge on a phone, so
+        // drop to a full-width sheet under the header below sm.
         <div className="fixed inset-x-4 top-16 z-30 rounded-xl border border-border bg-card p-3 shadow-lg sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2 sm:w-96">
           <p className="px-1 pb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             BMKG early warnings

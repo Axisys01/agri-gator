@@ -1,12 +1,15 @@
-// Shared vocabulary between the PIHPS importer (scripts/import-prices.mts) and the app:
-// commodity_prices stores province and price_type exactly as PIHPS spells them.
+// Shared vocabulary between the PIHPS importer (scripts/import-prices.mts) and
+// the app. commodity_prices stores province and price_type exactly as PIHPS
+// spells them, so these strings are the contract between the two.
 
 export const NATIONAL_PROVINCE = "Nasional";
 
 export const PRICE_TYPES = {
-  // What a farmer is paid at the farm gate: the number worth holding against a buyer's offer, and the app's default.
+  // What a farmer is actually paid at the farm gate — the number worth holding
+  // against a buyer's offer, and so the app's default.
   produsen: "Produsen",
-  // What shoppers pay at the pasar; the gap between the two is roughly the margin between field and market stall.
+  // What shoppers pay at the pasar. The gap between the two is roughly the
+  // margin taken between the field and the market stall.
   tradisional: "Pasar Tradisional",
 } as const;
 
@@ -54,8 +57,11 @@ const PIHPS_PROVINCES = [
   "Sumatera Utara",
 ] as const;
 
-// user_locations spells provinces in caps ("JAWA TENGAH"), PIHPS in title case; only
-// Yogyakarta needs an explicit alias, or its farmers would silently fall back to national prices.
+// user_locations.provinsi comes from the Permendagri wilayah dataset, which
+// spells provinces in caps ("JAWA TENGAH") where PIHPS uses title case ("Jawa
+// Tengah"). 33 of the 34 line up on case alone; Yogyakarta is the sole
+// exception and needs an explicit alias, or every Yogya farmer would quietly
+// fall back to national prices with nothing to indicate why.
 const BY_UPPERCASE = new Map<string, string>(
   PIHPS_PROVINCES.map((name) => [name.toUpperCase(), name]),
 );
