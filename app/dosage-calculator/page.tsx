@@ -4,6 +4,10 @@ import { PesticideCalculator } from "@/components/pesticide-calculator";
 export default function DosageCalculatorPage() {
   return (
     <div className="min-h-screen bg-background">
+      <div
+        className="pointer-events-none absolute inset-0 z-0 mx-auto max-w-6xl border-x border-border"
+        aria-hidden="true"
+      />
       <DashboardHeader />
 
       <main className="mx-auto max-w-6xl px-4 py-10 md:px-6 md:py-14">
@@ -12,8 +16,8 @@ export default function DosageCalculatorPage() {
             Pesticide Dosage Calculator
           </h1>
           <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground text-pretty">
-            Turn the concentration on your product label into how much to pour into each
-            sprayer tank, and how many tanks your plot needs.
+            Turn the concentration on your product label into how much to pour
+            into each sprayer tank, and how many tanks your plot needs.
           </p>
         </div>
 

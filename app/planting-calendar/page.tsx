@@ -8,6 +8,10 @@ export default async function PlantingCalendarPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <div
+        className="pointer-events-none absolute inset-0 z-0 mx-auto max-w-6xl border-x border-border"
+        aria-hidden="true"
+      />
       <DashboardHeader />
 
       <main className="mx-auto flex max-w-6xl flex-col items-center px-4 py-16 text-center md:px-6">
@@ -18,8 +22,8 @@ export default async function PlantingCalendarPage() {
           Planting Calendar
         </h1>
         <p className="mt-2 max-w-md text-sm text-muted-foreground">
-          Cross-references BMKG weather + nowcast alerts with your crop to recommend planting
-          windows and harvest timing.
+          Cross-references BMKG weather + nowcast alerts with your crop to
+          recommend planting windows and harvest timing.
         </p>
 
         <div className="mt-8 w-full">
@@ -27,7 +31,10 @@ export default async function PlantingCalendarPage() {
               first render, so without this, changing location from the header
               chip would leave a stale village in the input and advice for the
               old place still on screen. */}
-          <PlantingCalendar key={location?.adm4 ?? "none"} initialLocation={location} />
+          <PlantingCalendar
+            key={location?.adm4 ?? "none"}
+            initialLocation={location}
+          />
         </div>
       </main>
     </div>

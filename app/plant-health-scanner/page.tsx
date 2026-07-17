@@ -5,6 +5,10 @@ import { PlantHealthScannerForm } from "@/components/plant-health-scanner-form";
 export default function PlantHealthScannerPage() {
   return (
     <div className="min-h-screen bg-background">
+      <div
+        className="pointer-events-none absolute inset-0 z-0 mx-auto max-w-6xl border-x border-border"
+        aria-hidden="true"
+      />
       <DashboardHeader />
 
       <main className="mx-auto flex max-w-6xl flex-col items-center px-4 py-16 text-center md:px-6">
@@ -15,8 +19,8 @@ export default function PlantHealthScannerPage() {
           Plant Health Scanner
         </h1>
         <p className="mt-2 max-w-md text-sm text-muted-foreground">
-          Photo-based pest &amp; disease detection via image classification, running right in
-          your browser.
+          Photo-based pest &amp; disease detection via image classification,
+          running right in your browser.
         </p>
 
         <div className="mt-10 w-full">
